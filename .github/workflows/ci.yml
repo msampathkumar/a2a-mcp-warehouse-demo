@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Tests (no LLM calls)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - name: Install pinned dependencies
+        run: uv sync --frozen
+      - name: Verify committed data checksums
+        run: |
+          cd demo-app/data
+          grep -E '^[0-9a-f]{64}  ' README.md | sha256sum --check
+      - name: Answer key is reproducible from the data
+        run: |
+          cp test-app/answers.json /tmp/answers.before.json
+          uv run --frozen python test-app/build_tally.py > /dev/null
+          python - <<'PY'
+          import json
+          a = json.load(open("/tmp/answers.before.json"))["answers"]
+          b = json.load(open("test-app/answers.json"))["answers"]
+          assert a == b, "answers.json differs from a fresh build"
+          print(f"{len(b)} answers match")
+          PY
+      - name: Run tests
+        run: uv run --frozen pytest -q -p no:warnings

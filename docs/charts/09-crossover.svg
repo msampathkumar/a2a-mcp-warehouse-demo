@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 320" font-family="Arial,sans-serif" font-size="11">
+<rect width="520" height="320" fill="#fff"/>
+<text x="260.0" y="20" text-anchor="middle" font-size="14" font-weight="bold" fill="#202124">Which path costs less as data sources grow?</text>
+<line x1="62" x2="504" y1="258.0" y2="258.0" stroke="#e8eaed"/>
+<text x="56" y="262.0" text-anchor="end" fill="#5f6368">0</text>
+<line x1="62" x2="504" y1="203.5" y2="203.5" stroke="#e8eaed"/>
+<text x="56" y="207.5" text-anchor="end" fill="#5f6368">0.4</text>
+<line x1="62" x2="504" y1="149.0" y2="149.0" stroke="#e8eaed"/>
+<text x="56" y="153.0" text-anchor="end" fill="#5f6368">0.8</text>
+<line x1="62" x2="504" y1="94.5" y2="94.5" stroke="#e8eaed"/>
+<text x="56" y="98.5" text-anchor="end" fill="#5f6368">1.2</text>
+<line x1="62" x2="504" y1="40.0" y2="40.0" stroke="#e8eaed"/>
+<text x="56" y="44.0" text-anchor="end" fill="#5f6368">1.6</text>
+<text x="106.2" y="274" text-anchor="middle" fill="#5f6368">1</text>
+<text x="194.6" y="274" text-anchor="middle" fill="#5f6368">2</text>
+<text x="283.0" y="274" text-anchor="middle" fill="#5f6368">3</text>
+<text x="371.4" y="274" text-anchor="middle" fill="#5f6368">4</text>
+<text x="459.8" y="274" text-anchor="middle" fill="#5f6368">5</text>
+<text x="14" y="149.0" transform="rotate(-90 14 149.0)" text-anchor="middle" fill="#5f6368">A2A tokens ÷ MCP tokens</text>
+<text x="283.0" y="290" text-anchor="middle" fill="#5f6368">Data sources needed per question</text>
+<rect x="62" y="40.0" width="442" height="81.8" fill="#fce8e6" opacity=".6"/>
+<rect x="62" y="121.8" width="442" height="136.2" fill="#e8f0fe" opacity=".6"/>
+<text x="498" y="56.0" text-anchor="end" font-weight="bold" fill="#d93025">MCP costs less</text>
+<text x="106.2" y="196.7" text-anchor="middle" font-weight="bold" fill="#1a73e8">A2A costs less</text>
+<line x1="62" x2="504" y1="121.8" y2="121.8" stroke="#202124" stroke-dasharray="5,4"/>
+<text x="498" y="116.8" text-anchor="end" fill="#202124">same cost</text>
+<rect x="86.8" y="67.8" width="38.9" height="54.0" fill="#d93025"/>
+<text x="106.2" y="62.8" text-anchor="middle" font-weight="bold" fill="#202124">1.40×</text>
+<rect x="175.2" y="121.8" width="38.9" height="34.9" fill="#1a73e8"/>
+<text x="194.6" y="169.7" text-anchor="middle" font-weight="bold" fill="#202124">0.74×</text>
+<rect x="263.6" y="121.8" width="38.9" height="83.8" fill="#1a73e8"/>
+<text x="283.0" y="218.6" text-anchor="middle" font-weight="bold" fill="#202124">0.38×</text>
+<rect x="352.0" y="121.8" width="38.9" height="92.2" fill="#1a73e8"/>
+<text x="371.4" y="227.0" text-anchor="middle" font-weight="bold" fill="#202124">0.32×</text>
+<rect x="440.4" y="121.8" width="38.9" height="111.6" fill="#1a73e8"/>
+<text x="459.8" y="246.4" text-anchor="middle" font-weight="bold" fill="#202124">0.18×</text>
+<text x="66" y="314" fill="#5f6368">Total tokens per question (both agents), 5 trials. 5-source bar = 1 question.</text>
+</svg>

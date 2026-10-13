@@ -1,0 +1,217 @@
+{
+  "generated_at": "2026-10-13T18:57:45+00:00",
+  "answers": {
+    "L1-Q01": {
+      "answer_type": "number",
+      "expected": 66375
+    },
+    "L1-Q02": {
+      "answer_type": "number",
+      "expected": 74564477
+    },
+    "L1-Q03": {
+      "answer_type": "number",
+      "expected": 1123.38
+    },
+    "L1-Q04": {
+      "answer_type": "number",
+      "expected": 2551
+    },
+    "L1-Q05": {
+      "answer_type": "string",
+      "expected": "2021-03"
+    },
+    "L1-Q06": {
+      "answer_type": "number",
+      "expected": 26492
+    },
+    "L1-Q07": {
+      "answer_type": "number",
+      "expected": 1594734
+    },
+    "L1-Q08": {
+      "answer_type": "number",
+      "expected": 10600
+    },
+    "L1-Q09": {
+      "answer_type": "number",
+      "expected": 7924
+    },
+    "L1-Q10": {
+      "answer_type": "number",
+      "expected": 8
+    },
+    "L2-Q01": {
+      "answer_type": "number",
+      "expected": 6
+    },
+    "L2-Q02": {
+      "answer_type": "string",
+      "expected": "Los Angeles"
+    },
+    "L2-Q03": {
+      "answer_type": "number",
+      "expected": 1065.76
+    },
+    "L2-Q04": {
+      "answer_type": "string",
+      "expected": "Brooklyn"
+    },
+    "L2-Q05": {
+      "answer_type": "number",
+      "expected": 11861339
+    },
+    "L2-Q06": {
+      "answer_type": "set",
+      "expected": [
+        "Los Angeles"
+      ]
+    },
+    "L2-Q07": {
+      "answer_type": "string",
+      "expected": "Brooklyn"
+    },
+    "L2-Q08": {
+      "answer_type": "number",
+      "expected": 39285
+    },
+    "L2-Q09": {
+      "answer_type": "list",
+      "expected": [
+        "Brooklyn",
+        "Philadelphia",
+        "Chicago",
+        "San Francisco",
+        "New Orleans"
+      ]
+    },
+    "L2-Q10": {
+      "answer_type": "string",
+      "expected": "Brooklyn"
+    },
+    "L3-Q01": {
+      "answer_type": "number",
+      "expected": 2583
+    },
+    "L3-Q02": {
+      "answer_type": "number",
+      "expected": 4885
+    },
+    "L3-Q03": {
+      "answer_type": "number",
+      "expected": 2543
+    },
+    "L3-Q04": {
+      "answer_type": "number",
+      "expected": 32
+    },
+    "L3-Q05": {
+      "answer_type": "string",
+      "expected": "Mary Deleon"
+    },
+    "L3-Q06": {
+      "answer_type": "string",
+      "expected": "Lisa Mendoza PhD"
+    },
+    "L3-Q07": {
+      "answer_type": "number",
+      "expected": 546
+    },
+    "L3-Q08": {
+      "answer_type": "number",
+      "expected": 674
+    },
+    "L3-Q09": {
+      "answer_type": "string",
+      "expected": "Mary Deleon"
+    },
+    "L3-Q10": {
+      "answer_type": "list",
+      "expected": [
+        "Michael Turner",
+        "Robert Williams",
+        "Crystal Perez"
+      ]
+    },
+    "L4-Q01": {
+      "answer_type": "number",
+      "expected": 99753
+    },
+    "L4-Q02": {
+      "answer_type": "string",
+      "expected": "BEV-003"
+    },
+    "L4-Q03": {
+      "answer_type": "number",
+      "expected": 3253
+    },
+    "L4-Q04": {
+      "answer_type": "number",
+      "expected": 185
+    },
+    "L4-Q05": {
+      "answer_type": "number",
+      "expected": 1.28
+    },
+    "L4-Q06": {
+      "answer_type": "number",
+      "expected": 38
+    },
+    "L4-Q07": {
+      "answer_type": "string",
+      "expected": "Brooklyn"
+    },
+    "L4-Q08": {
+      "answer_type": "number",
+      "expected": 112
+    },
+    "L4-Q09": {
+      "answer_type": "string",
+      "expected": "Linda Lynn"
+    },
+    "L4-Q10": {
+      "answer_type": "number",
+      "expected": 3
+    },
+    "L5-Q01": {
+      "answer_type": "number",
+      "expected": 5
+    },
+    "L5-Q02": {
+      "answer_type": "string",
+      "expected": "flame impala"
+    },
+    "L5-Q03": {
+      "answer_type": "number",
+      "expected": 560
+    },
+    "L5-Q04": {
+      "answer_type": "string",
+      "expected": "vanilla ice"
+    },
+    "L5-Q05": {
+      "answer_type": "number",
+      "expected": 27933400
+    },
+    "L5-Q06": {
+      "answer_type": "string",
+      "expected": "beverage"
+    },
+    "L5-Q07": {
+      "answer_type": "number",
+      "expected": 91100
+    },
+    "L5-Q08": {
+      "answer_type": "number",
+      "expected": 8800
+    },
+    "L5-Q09": {
+      "answer_type": "string",
+      "expected": "Anthony Holt"
+    },
+    "L5-Q10": {
+      "answer_type": "string",
+      "expected": "Robert Fleming"
+    }
+  }
+}

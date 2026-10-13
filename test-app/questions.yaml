@@ -1,0 +1,514 @@
+# Single source of truth for the challenge questions.
+#
+#   python test-app/build_tally.py
+#     -> demo-app/tally.json        (questions only; served by the demo app)
+#     -> test-app/answers.json      (answer key; never shipped in the app)
+#
+# reference_sql runs on DuckDB over ALL tables with JOINs allowed. It is the
+# ground truth only; agents never see it and cannot JOIN across sources.
+#
+# answer_type: number | string | list (ordered) | set (unordered list)
+# argmax: true -> reference_sql returns (label, metric) ORDER BY metric DESC
+#                LIMIT 2; build fails if the top two metrics tie.
+# Money columns are integer cents.
+
+questions:
+  # ------------------------------------------------------------ level 1
+  - id: L1-Q01
+    level: 1
+    difficulty: lookup
+    sources_needed: [orders]
+    question: How many orders are there in total?
+    answer_type: number
+    reference_sql: SELECT count(*) FROM orders
+
+  - id: L1-Q02
+    level: 1
+    difficulty: aggregate
+    sources_needed: [orders]
+    question: What is the total revenue (sum of order_total) across all orders, in cents?
+    answer_type: number
+    reference_sql: SELECT sum(order_total) FROM orders
+
+  - id: L1-Q03
+    level: 1
+    difficulty: aggregate
+    sources_needed: [orders]
+    question: What is the average order_total in cents, rounded to 2 decimals?
+    answer_type: number
+    reference_sql: SELECT round(avg(order_total), 2) FROM orders
+
+  - id: L1-Q04
+    level: 1
+    difficulty: aggregate
+    sources_needed: [orders]
+    question: How many distinct customers placed at least one order?
+    answer_type: number
+    reference_sql: SELECT count(DISTINCT customer) FROM orders
+
+  - id: L1-Q05
+    level: 1
+    difficulty: aggregate
+    sources_needed: [orders]
+    question: Which calendar month had the most orders? Answer as YYYY-MM.
+    answer_type: string
+    argmax: true
+    reference_sql: >-
+      SELECT strftime(ordered_at, '%Y-%m') AS m, count(*) AS n FROM orders
+      GROUP BY m ORDER BY n DESC LIMIT 2
+
+  - id: L1-Q06
+    level: 1
+    difficulty: aggregate
+    sources_needed: [orders]
+    question: How many orders were placed in calendar year 2020?
+    answer_type: number
+    reference_sql: SELECT count(*) FROM orders WHERE year(ordered_at) = 2020
+
+  - id: L1-Q07
+    level: 1
+    difficulty: aggregate
+    sources_needed: [orders]
+    question: What is the total tax_paid, in cents, for orders placed in 2021?
+    answer_type: number
+    reference_sql: SELECT sum(tax_paid) FROM orders WHERE year(ordered_at) = 2021
+
+  - id: L1-Q08
+    level: 1
+    difficulty: lookup
+    sources_needed: [orders]
+    question: What is the largest single order_total, in cents?
+    answer_type: number
+    reference_sql: SELECT max(order_total) FROM orders
+
+  - id: L1-Q09
+    level: 1
+    difficulty: aggregate
+    sources_needed: [orders]
+    question: How many orders have an order_total of at least 2000 cents?
+    answer_type: number
+    reference_sql: SELECT count(*) FROM orders WHERE order_total >= 2000
+
+  - id: L1-Q10
+    level: 1
+    difficulty: aggregate
+    sources_needed: [orders]
+    question: Which hour of the day (0-23) has the most orders?
+    answer_type: number
+    argmax: true
+    reference_sql: >-
+      SELECT hour(ordered_at) AS h, count(*) AS n FROM orders
+      GROUP BY h ORDER BY n DESC LIMIT 2
+
+  # ------------------------------------------------------------ level 2
+  - id: L2-Q01
+    level: 2
+    difficulty: lookup
+    sources_needed: [stores]
+    question: How many stores are there?
+    answer_type: number
+    reference_sql: SELECT count(*) FROM stores
+
+  - id: L2-Q02
+    level: 2
+    difficulty: lookup
+    sources_needed: [stores]
+    question: Which store (name) has the highest tax_rate?
+    answer_type: string
+    argmax: true
+    reference_sql: SELECT name, tax_rate FROM stores ORDER BY tax_rate DESC LIMIT 2
+
+  - id: L2-Q03
+    level: 2
+    difficulty: aggregate
+    sources_needed: [orders]
+    question: What is the average subtotal in cents across all orders, rounded to 2 decimals?
+    answer_type: number
+    reference_sql: SELECT round(avg(subtotal), 2) FROM orders
+
+  - id: L2-Q04
+    level: 2
+    difficulty: cross-source
+    sources_needed: [orders, stores]
+    question: Which store (name) had the most orders?
+    answer_type: string
+    argmax: true
+    reference_sql: >-
+      SELECT s.name, count(*) AS n FROM orders o JOIN stores s ON o.store_id = s.id
+      GROUP BY s.name ORDER BY n DESC LIMIT 2
+
+  - id: L2-Q05
+    level: 2
+    difficulty: cross-source
+    sources_needed: [orders, stores]
+    question: What is the total revenue (sum of order_total) in cents for the Chicago store?
+    answer_type: number
+    reference_sql: >-
+      SELECT sum(o.order_total) FROM orders o JOIN stores s ON o.store_id = s.id
+      WHERE s.name = 'Chicago'
+
+  - id: L2-Q06
+    level: 2
+    difficulty: cross-source
+    sources_needed: [orders, stores]
+    question: Which stores (names) have no orders at all?
+    answer_type: set
+    reference_sql: >-
+      SELECT name FROM stores WHERE id NOT IN (SELECT DISTINCT store_id FROM orders)
+
+  - id: L2-Q07
+    level: 2
+    difficulty: cross-source
+    sources_needed: [orders, stores]
+    question: For orders placed in 2020, which store (name) had the highest revenue?
+    answer_type: string
+    argmax: true
+    reference_sql: >-
+      SELECT s.name, sum(o.order_total) AS r FROM orders o JOIN stores s ON o.store_id = s.id
+      WHERE year(o.ordered_at) = 2020 GROUP BY s.name ORDER BY r DESC LIMIT 2
+
+  - id: L2-Q08
+    level: 2
+    difficulty: cross-source
+    sources_needed: [orders, stores]
+    question: How many orders were placed at stores whose tax_rate is above 0.05?
+    answer_type: number
+    reference_sql: >-
+      SELECT count(*) FROM orders o JOIN stores s ON o.store_id = s.id WHERE s.tax_rate > 0.05
+
+  - id: L2-Q09
+    level: 2
+    difficulty: cross-source
+    sources_needed: [orders, stores]
+    question: List the names of stores that have at least one order, ranked by number of orders (most first).
+    answer_type: list
+    reference_sql: >-
+      SELECT s.name FROM orders o JOIN stores s ON o.store_id = s.id
+      GROUP BY s.name ORDER BY count(*) DESC
+
+  - id: L2-Q10
+    level: 2
+    difficulty: cross-source
+    sources_needed: [orders, stores]
+    question: Which store (name) had the most orders in its first 30 days after its opened_at date?
+    answer_type: string
+    argmax: true
+    reference_sql: >-
+      SELECT s.name, count(*) AS n FROM orders o JOIN stores s ON o.store_id = s.id
+      WHERE o.ordered_at < s.opened_at + INTERVAL 30 DAY
+      GROUP BY s.name ORDER BY n DESC LIMIT 2
+
+  # ------------------------------------------------------------ level 3
+  - id: L3-Q01
+    level: 3
+    difficulty: lookup
+    sources_needed: [customers]
+    question: How many customers are there in the customers table?
+    answer_type: number
+    reference_sql: SELECT count(*) FROM customers
+
+  - id: L3-Q02
+    level: 3
+    difficulty: aggregate
+    sources_needed: [orders]
+    question: How many orders were placed in the first quarter (January to March) of 2020?
+    answer_type: number
+    reference_sql: >-
+      SELECT count(*) FROM orders WHERE ordered_at >= '2020-01-01' AND ordered_at < '2020-04-01'
+
+  - id: L3-Q03
+    level: 3
+    difficulty: aggregate
+    sources_needed: [orders]
+    question: How many distinct customers placed at least one order in 2021?
+    answer_type: number
+    reference_sql: SELECT count(DISTINCT customer) FROM orders WHERE year(ordered_at) = 2021
+
+  - id: L3-Q04
+    level: 3
+    difficulty: cross-source
+    sources_needed: [orders, customers]
+    question: How many customers have never placed an order?
+    answer_type: number
+    reference_sql: >-
+      SELECT count(*) FROM customers WHERE id NOT IN (SELECT DISTINCT customer FROM orders)
+
+  - id: L3-Q05
+    level: 3
+    difficulty: cross-source
+    sources_needed: [orders, customers]
+    question: What is the name of the customer with the highest total spend (sum of order_total)?
+    answer_type: string
+    argmax: true
+    reference_sql: >-
+      SELECT c.name, sum(o.order_total) AS t FROM orders o JOIN customers c ON o.customer = c.id
+      GROUP BY c.id, c.name ORDER BY t DESC LIMIT 2
+
+  - id: L3-Q06
+    level: 3
+    difficulty: cross-source
+    sources_needed: [orders, customers]
+    question: What is the name of the customer who placed the most orders?
+    answer_type: string
+    argmax: true
+    reference_sql: >-
+      SELECT c.name, count(*) AS n FROM orders o JOIN customers c ON o.customer = c.id
+      GROUP BY c.id, c.name ORDER BY n DESC LIMIT 2
+
+  - id: L3-Q07
+    level: 3
+    difficulty: cross-source
+    sources_needed: [orders, stores]
+    question: How many distinct customers ordered at the San Francisco store?
+    answer_type: number
+    reference_sql: >-
+      SELECT count(DISTINCT o.customer) FROM orders o JOIN stores s ON o.store_id = s.id
+      WHERE s.name = 'San Francisco'
+
+  - id: L3-Q08
+    level: 3
+    difficulty: cross-source
+    sources_needed: [orders, stores]
+    question: At the Brooklyn store, how many distinct customers placed at least 10 orders there?
+    answer_type: number
+    reference_sql: >-
+      SELECT count(*) FROM (SELECT o.customer FROM orders o JOIN stores s ON o.store_id = s.id
+      WHERE s.name = 'Brooklyn' GROUP BY o.customer HAVING count(*) >= 10)
+
+  - id: L3-Q09
+    level: 3
+    difficulty: cross-source
+    sources_needed: [orders, stores, customers]
+    question: What is the name of the top-spending customer (sum of order_total) at the Philadelphia store?
+    answer_type: string
+    argmax: true
+    reference_sql: >-
+      SELECT c.name, sum(o.order_total) AS t FROM orders o
+      JOIN stores s ON o.store_id = s.id JOIN customers c ON o.customer = c.id
+      WHERE s.name = 'Philadelphia' GROUP BY c.id, c.name ORDER BY t DESC LIMIT 2
+
+  - id: L3-Q10
+    level: 3
+    difficulty: cross-source
+    sources_needed: [orders, stores, customers]
+    question: List the names of the top 3 customers by total spend at the Chicago store, highest first.
+    answer_type: list
+    reference_sql: >-
+      SELECT c.name FROM orders o JOIN stores s ON o.store_id = s.id JOIN customers c ON o.customer = c.id
+      WHERE s.name = 'Chicago' GROUP BY c.id, c.name ORDER BY sum(o.order_total) DESC LIMIT 3
+
+  # ------------------------------------------------------------ level 4
+  - id: L4-Q01
+    level: 4
+    difficulty: lookup
+    sources_needed: [order_items]
+    question: How many order items are there in total?
+    answer_type: number
+    reference_sql: SELECT count(*) FROM order_items
+
+  - id: L4-Q02
+    level: 4
+    difficulty: aggregate
+    sources_needed: [order_items]
+    question: Which SKU appears in the most order items?
+    answer_type: string
+    argmax: true
+    reference_sql: >-
+      SELECT sku, count(*) AS n FROM order_items GROUP BY sku ORDER BY n DESC LIMIT 2
+
+  - id: L4-Q03
+    level: 4
+    difficulty: aggregate
+    sources_needed: [order_items]
+    question: How many orders contain more than 3 items?
+    answer_type: number
+    reference_sql: >-
+      SELECT count(*) FROM (SELECT order_id FROM order_items GROUP BY order_id HAVING count(*) > 3)
+
+  - id: L4-Q04
+    level: 4
+    difficulty: cross-source
+    sources_needed: [orders, order_items]
+    question: How many items in total were sold in orders placed on 2021-08-02?
+    answer_type: number
+    reference_sql: >-
+      SELECT count(*) FROM order_items i JOIN orders o ON i.order_id = o.id
+      WHERE o.ordered_at::DATE = DATE '2021-08-02'
+
+  - id: L4-Q05
+    level: 4
+    difficulty: cross-source
+    sources_needed: [orders, order_items]
+    question: For orders placed on 2021-08-02, what is the average number of items per order, rounded to 2 decimals?
+    answer_type: number
+    reference_sql: >-
+      SELECT round(count(i.id) / count(DISTINCT o.id), 2) FROM orders o
+      LEFT JOIN order_items i ON i.order_id = o.id WHERE o.ordered_at::DATE = DATE '2021-08-02'
+
+  - id: L4-Q06
+    level: 4
+    difficulty: cross-source
+    sources_needed: [orders, order_items]
+    question: How many distinct customers bought SKU BEV-001 on 2021-08-02?
+    answer_type: number
+    reference_sql: >-
+      SELECT count(DISTINCT o.customer) FROM order_items i JOIN orders o ON i.order_id = o.id
+      WHERE o.ordered_at::DATE = DATE '2021-08-02' AND i.sku = 'BEV-001'
+
+  - id: L4-Q07
+    level: 4
+    difficulty: cross-source
+    sources_needed: [orders, order_items, stores]
+    question: Which store (name) sold the most items on 2021-08-02?
+    answer_type: string
+    argmax: true
+    reference_sql: >-
+      SELECT s.name, count(*) AS n FROM order_items i JOIN orders o ON i.order_id = o.id
+      JOIN stores s ON o.store_id = s.id WHERE o.ordered_at::DATE = DATE '2021-08-02'
+      GROUP BY s.name ORDER BY n DESC LIMIT 2
+
+  - id: L4-Q08
+    level: 4
+    difficulty: cross-source
+    sources_needed: [orders, order_items, stores]
+    question: How many items were sold at the New Orleans store during 2021-08-23 to 2021-08-29 (inclusive)?
+    answer_type: number
+    reference_sql: >-
+      SELECT count(*) FROM order_items i JOIN orders o ON i.order_id = o.id
+      JOIN stores s ON o.store_id = s.id WHERE s.name = 'New Orleans'
+      AND o.ordered_at::DATE BETWEEN DATE '2021-08-23' AND DATE '2021-08-29'
+
+  - id: L4-Q09
+    level: 4
+    difficulty: cross-source
+    sources_needed: [orders, order_items, customers]
+    question: >-
+      During 2021-08-02 to 2021-08-08 (inclusive), which customer (name) spent the most
+      (sum of order_total) on orders that contained at least 3 items?
+    answer_type: string
+    argmax: true
+    reference_sql: >-
+      SELECT c.name, sum(o.order_total) AS t FROM orders o JOIN customers c ON o.customer = c.id
+      WHERE o.ordered_at::DATE BETWEEN DATE '2021-08-02' AND DATE '2021-08-08'
+      AND (SELECT count(*) FROM order_items i WHERE i.order_id = o.id) >= 3
+      GROUP BY c.id, c.name ORDER BY t DESC LIMIT 2
+
+  - id: L4-Q10
+    level: 4
+    difficulty: cross-source
+    sources_needed: [orders, order_items, stores, customers]
+    question: On 2021-08-02 at the Chicago store, how many distinct customers bought more than 2 items in a single order?
+    answer_type: number
+    reference_sql: >-
+      SELECT count(DISTINCT o.customer) FROM orders o JOIN stores s ON o.store_id = s.id
+      WHERE s.name = 'Chicago' AND o.ordered_at::DATE = DATE '2021-08-02'
+      AND (SELECT count(*) FROM order_items i WHERE i.order_id = o.id) > 2
+
+  # ------------------------------------------------------------ level 5
+  - id: L5-Q01
+    level: 5
+    difficulty: lookup
+    sources_needed: [products]
+    question: How many products are of type 'jaffle'?
+    answer_type: number
+    reference_sql: SELECT count(*) FROM products WHERE type = 'jaffle'
+
+  - id: L5-Q02
+    level: 5
+    difficulty: lookup
+    sources_needed: [products]
+    question: What is the name of the most expensive product?
+    answer_type: string
+    argmax: true
+    reference_sql: SELECT name, price FROM products ORDER BY price DESC LIMIT 2
+
+  - id: L5-Q03
+    level: 5
+    difficulty: aggregate
+    sources_needed: [products]
+    question: What is the average price of beverages, in cents, rounded to 2 decimals?
+    answer_type: number
+    reference_sql: SELECT round(avg(price), 2) FROM products WHERE type = 'beverage'
+
+  - id: L5-Q04
+    level: 5
+    difficulty: cross-source
+    sources_needed: [order_items, products]
+    question: What is the name of the product with the most units sold (count of order items)?
+    answer_type: string
+    argmax: true
+    reference_sql: >-
+      SELECT p.name, count(*) AS n FROM order_items i JOIN products p ON i.sku = p.sku
+      GROUP BY p.name ORDER BY n DESC LIMIT 2
+
+  - id: L5-Q05
+    level: 5
+    difficulty: cross-source
+    sources_needed: [order_items, products]
+    question: What is the total list-price value (sum of product price per item sold) of all jaffles sold, in cents?
+    answer_type: number
+    reference_sql: >-
+      SELECT sum(p.price) FROM order_items i JOIN products p ON i.sku = p.sku WHERE p.type = 'jaffle'
+
+  - id: L5-Q06
+    level: 5
+    difficulty: cross-source
+    sources_needed: [order_items, products]
+    question: Which product type sold more units overall, 'jaffle' or 'beverage'?
+    answer_type: string
+    argmax: true
+    reference_sql: >-
+      SELECT p.type, count(*) AS n FROM order_items i JOIN products p ON i.sku = p.sku
+      GROUP BY p.type ORDER BY n DESC LIMIT 2
+
+  - id: L5-Q07
+    level: 5
+    difficulty: cross-source
+    sources_needed: [orders, order_items, products]
+    question: What is the total list-price value, in cents, of beverages sold on 2021-08-02?
+    answer_type: number
+    reference_sql: >-
+      SELECT sum(p.price) FROM order_items i JOIN orders o ON i.order_id = o.id
+      JOIN products p ON i.sku = p.sku
+      WHERE o.ordered_at::DATE = DATE '2021-08-02' AND p.type = 'beverage'
+
+  - id: L5-Q08
+    level: 5
+    difficulty: cross-source
+    sources_needed: [orders, order_items, products, stores]
+    question: What is the total list-price value, in cents, of jaffles sold at the Brooklyn store on 2021-08-02?
+    answer_type: number
+    reference_sql: >-
+      SELECT sum(p.price) FROM order_items i JOIN orders o ON i.order_id = o.id
+      JOIN products p ON i.sku = p.sku JOIN stores s ON o.store_id = s.id
+      WHERE o.ordered_at::DATE = DATE '2021-08-02' AND p.type = 'jaffle' AND s.name = 'Brooklyn'
+
+  - id: L5-Q09
+    level: 5
+    difficulty: cross-source
+    sources_needed: [orders, order_items, products, customers]
+    question: On 2021-08-02, which customer (name) spent the most list-price value on jaffles?
+    answer_type: string
+    argmax: true
+    reference_sql: >-
+      SELECT c.name, sum(p.price) AS v FROM order_items i JOIN orders o ON i.order_id = o.id
+      JOIN products p ON i.sku = p.sku JOIN customers c ON o.customer = c.id
+      WHERE o.ordered_at::DATE = DATE '2021-08-02' AND p.type = 'jaffle'
+      GROUP BY c.id, c.name ORDER BY v DESC LIMIT 2
+
+  - id: L5-Q10
+    level: 5
+    difficulty: cross-source
+    sources_needed: [orders, order_items, products, stores, customers]
+    question: >-
+      On 2021-08-02, at the store with the highest tax_rate among stores that had orders that day,
+      which customer (name) spent the most list-price value on beverages?
+    answer_type: string
+    argmax: true
+    reference_sql: >-
+      WITH st AS (SELECT s.id FROM stores s WHERE s.id IN (SELECT store_id FROM orders
+        WHERE ordered_at::DATE = DATE '2021-08-02') ORDER BY s.tax_rate DESC LIMIT 1)
+      SELECT c.name, sum(p.price) AS v FROM order_items i JOIN orders o ON i.order_id = o.id
+      JOIN products p ON i.sku = p.sku JOIN customers c ON o.customer = c.id
+      WHERE o.ordered_at::DATE = DATE '2021-08-02' AND p.type = 'beverage' AND o.store_id IN (SELECT id FROM st)
+      GROUP BY c.id, c.name ORDER BY v DESC LIMIT 2

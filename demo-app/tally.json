@@ -1,0 +1,548 @@
+{
+  "generated_at": "2026-10-13T18:57:45+00:00",
+  "questions": [
+    {
+      "id": "L1-Q01",
+      "level": 1,
+      "difficulty": "lookup",
+      "sources_needed": [
+        "orders"
+      ],
+      "question": "How many orders are there in total?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L1-Q02",
+      "level": 1,
+      "difficulty": "aggregate",
+      "sources_needed": [
+        "orders"
+      ],
+      "question": "What is the total revenue (sum of order_total) across all orders, in cents?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L1-Q03",
+      "level": 1,
+      "difficulty": "aggregate",
+      "sources_needed": [
+        "orders"
+      ],
+      "question": "What is the average order_total in cents, rounded to 2 decimals?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L1-Q04",
+      "level": 1,
+      "difficulty": "aggregate",
+      "sources_needed": [
+        "orders"
+      ],
+      "question": "How many distinct customers placed at least one order?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L1-Q05",
+      "level": 1,
+      "difficulty": "aggregate",
+      "sources_needed": [
+        "orders"
+      ],
+      "question": "Which calendar month had the most orders? Answer as YYYY-MM.",
+      "answer_type": "string"
+    },
+    {
+      "id": "L1-Q06",
+      "level": 1,
+      "difficulty": "aggregate",
+      "sources_needed": [
+        "orders"
+      ],
+      "question": "How many orders were placed in calendar year 2020?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L1-Q07",
+      "level": 1,
+      "difficulty": "aggregate",
+      "sources_needed": [
+        "orders"
+      ],
+      "question": "What is the total tax_paid, in cents, for orders placed in 2021?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L1-Q08",
+      "level": 1,
+      "difficulty": "lookup",
+      "sources_needed": [
+        "orders"
+      ],
+      "question": "What is the largest single order_total, in cents?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L1-Q09",
+      "level": 1,
+      "difficulty": "aggregate",
+      "sources_needed": [
+        "orders"
+      ],
+      "question": "How many orders have an order_total of at least 2000 cents?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L1-Q10",
+      "level": 1,
+      "difficulty": "aggregate",
+      "sources_needed": [
+        "orders"
+      ],
+      "question": "Which hour of the day (0-23) has the most orders?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L2-Q01",
+      "level": 2,
+      "difficulty": "lookup",
+      "sources_needed": [
+        "stores"
+      ],
+      "question": "How many stores are there?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L2-Q02",
+      "level": 2,
+      "difficulty": "lookup",
+      "sources_needed": [
+        "stores"
+      ],
+      "question": "Which store (name) has the highest tax_rate?",
+      "answer_type": "string"
+    },
+    {
+      "id": "L2-Q03",
+      "level": 2,
+      "difficulty": "aggregate",
+      "sources_needed": [
+        "orders"
+      ],
+      "question": "What is the average subtotal in cents across all orders, rounded to 2 decimals?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L2-Q04",
+      "level": 2,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "stores"
+      ],
+      "question": "Which store (name) had the most orders?",
+      "answer_type": "string"
+    },
+    {
+      "id": "L2-Q05",
+      "level": 2,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "stores"
+      ],
+      "question": "What is the total revenue (sum of order_total) in cents for the Chicago store?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L2-Q06",
+      "level": 2,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "stores"
+      ],
+      "question": "Which stores (names) have no orders at all?",
+      "answer_type": "set"
+    },
+    {
+      "id": "L2-Q07",
+      "level": 2,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "stores"
+      ],
+      "question": "For orders placed in 2020, which store (name) had the highest revenue?",
+      "answer_type": "string"
+    },
+    {
+      "id": "L2-Q08",
+      "level": 2,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "stores"
+      ],
+      "question": "How many orders were placed at stores whose tax_rate is above 0.05?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L2-Q09",
+      "level": 2,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "stores"
+      ],
+      "question": "List the names of stores that have at least one order, ranked by number of orders (most first).",
+      "answer_type": "list"
+    },
+    {
+      "id": "L2-Q10",
+      "level": 2,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "stores"
+      ],
+      "question": "Which store (name) had the most orders in its first 30 days after its opened_at date?",
+      "answer_type": "string"
+    },
+    {
+      "id": "L3-Q01",
+      "level": 3,
+      "difficulty": "lookup",
+      "sources_needed": [
+        "customers"
+      ],
+      "question": "How many customers are there in the customers table?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L3-Q02",
+      "level": 3,
+      "difficulty": "aggregate",
+      "sources_needed": [
+        "orders"
+      ],
+      "question": "How many orders were placed in the first quarter (January to March) of 2020?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L3-Q03",
+      "level": 3,
+      "difficulty": "aggregate",
+      "sources_needed": [
+        "orders"
+      ],
+      "question": "How many distinct customers placed at least one order in 2021?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L3-Q04",
+      "level": 3,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "customers"
+      ],
+      "question": "How many customers have never placed an order?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L3-Q05",
+      "level": 3,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "customers"
+      ],
+      "question": "What is the name of the customer with the highest total spend (sum of order_total)?",
+      "answer_type": "string"
+    },
+    {
+      "id": "L3-Q06",
+      "level": 3,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "customers"
+      ],
+      "question": "What is the name of the customer who placed the most orders?",
+      "answer_type": "string"
+    },
+    {
+      "id": "L3-Q07",
+      "level": 3,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "stores"
+      ],
+      "question": "How many distinct customers ordered at the San Francisco store?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L3-Q08",
+      "level": 3,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "stores"
+      ],
+      "question": "At the Brooklyn store, how many distinct customers placed at least 10 orders there?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L3-Q09",
+      "level": 3,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "stores",
+        "customers"
+      ],
+      "question": "What is the name of the top-spending customer (sum of order_total) at the Philadelphia store?",
+      "answer_type": "string"
+    },
+    {
+      "id": "L3-Q10",
+      "level": 3,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "stores",
+        "customers"
+      ],
+      "question": "List the names of the top 3 customers by total spend at the Chicago store, highest first.",
+      "answer_type": "list"
+    },
+    {
+      "id": "L4-Q01",
+      "level": 4,
+      "difficulty": "lookup",
+      "sources_needed": [
+        "order_items"
+      ],
+      "question": "How many order items are there in total?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L4-Q02",
+      "level": 4,
+      "difficulty": "aggregate",
+      "sources_needed": [
+        "order_items"
+      ],
+      "question": "Which SKU appears in the most order items?",
+      "answer_type": "string"
+    },
+    {
+      "id": "L4-Q03",
+      "level": 4,
+      "difficulty": "aggregate",
+      "sources_needed": [
+        "order_items"
+      ],
+      "question": "How many orders contain more than 3 items?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L4-Q04",
+      "level": 4,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "order_items"
+      ],
+      "question": "How many items in total were sold in orders placed on 2021-08-02?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L4-Q05",
+      "level": 4,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "order_items"
+      ],
+      "question": "For orders placed on 2021-08-02, what is the average number of items per order, rounded to 2 decimals?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L4-Q06",
+      "level": 4,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "order_items"
+      ],
+      "question": "How many distinct customers bought SKU BEV-001 on 2021-08-02?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L4-Q07",
+      "level": 4,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "order_items",
+        "stores"
+      ],
+      "question": "Which store (name) sold the most items on 2021-08-02?",
+      "answer_type": "string"
+    },
+    {
+      "id": "L4-Q08",
+      "level": 4,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "order_items",
+        "stores"
+      ],
+      "question": "How many items were sold at the New Orleans store during 2021-08-23 to 2021-08-29 (inclusive)?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L4-Q09",
+      "level": 4,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "order_items",
+        "customers"
+      ],
+      "question": "During 2021-08-02 to 2021-08-08 (inclusive), which customer (name) spent the most (sum of order_total) on orders that contained at least 3 items?",
+      "answer_type": "string"
+    },
+    {
+      "id": "L4-Q10",
+      "level": 4,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "order_items",
+        "stores",
+        "customers"
+      ],
+      "question": "On 2021-08-02 at the Chicago store, how many distinct customers bought more than 2 items in a single order?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L5-Q01",
+      "level": 5,
+      "difficulty": "lookup",
+      "sources_needed": [
+        "products"
+      ],
+      "question": "How many products are of type 'jaffle'?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L5-Q02",
+      "level": 5,
+      "difficulty": "lookup",
+      "sources_needed": [
+        "products"
+      ],
+      "question": "What is the name of the most expensive product?",
+      "answer_type": "string"
+    },
+    {
+      "id": "L5-Q03",
+      "level": 5,
+      "difficulty": "aggregate",
+      "sources_needed": [
+        "products"
+      ],
+      "question": "What is the average price of beverages, in cents, rounded to 2 decimals?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L5-Q04",
+      "level": 5,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "order_items",
+        "products"
+      ],
+      "question": "What is the name of the product with the most units sold (count of order items)?",
+      "answer_type": "string"
+    },
+    {
+      "id": "L5-Q05",
+      "level": 5,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "order_items",
+        "products"
+      ],
+      "question": "What is the total list-price value (sum of product price per item sold) of all jaffles sold, in cents?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L5-Q06",
+      "level": 5,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "order_items",
+        "products"
+      ],
+      "question": "Which product type sold more units overall, 'jaffle' or 'beverage'?",
+      "answer_type": "string"
+    },
+    {
+      "id": "L5-Q07",
+      "level": 5,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "order_items",
+        "products"
+      ],
+      "question": "What is the total list-price value, in cents, of beverages sold on 2021-08-02?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L5-Q08",
+      "level": 5,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "order_items",
+        "products",
+        "stores"
+      ],
+      "question": "What is the total list-price value, in cents, of jaffles sold at the Brooklyn store on 2021-08-02?",
+      "answer_type": "number"
+    },
+    {
+      "id": "L5-Q09",
+      "level": 5,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "order_items",
+        "products",
+        "customers"
+      ],
+      "question": "On 2021-08-02, which customer (name) spent the most list-price value on jaffles?",
+      "answer_type": "string"
+    },
+    {
+      "id": "L5-Q10",
+      "level": 5,
+      "difficulty": "cross-source",
+      "sources_needed": [
+        "orders",
+        "order_items",
+        "products",
+        "stores",
+        "customers"
+      ],
+      "question": "On 2021-08-02, at the store with the highest tax_rate among stores that had orders that day, which customer (name) spent the most list-price value on beverages?",
+      "answer_type": "string"
+    }
+  ]
+}

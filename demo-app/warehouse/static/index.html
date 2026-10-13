@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A2A + MCP warehouse challenge</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; color: #202124; }
+    h1 { font-size: 1.6rem; margin-bottom: .2rem; }
+    .sub { color: #5f6368; margin-top: 0; }
+    .levels a { margin-right: .6rem; }
+    .levels a.on { font-weight: 700; text-decoration: none; color: #202124; }
+    table { border-collapse: collapse; width: 100%; margin: .8rem 0 1.6rem; }
+    th, td { border: 1px solid #dadce0; padding: .45rem .6rem; text-align: left; vertical-align: top; font-size: .92rem; }
+    th { background: #f1f3f4; }
+    code { background: #f1f3f4; padding: 0 .25rem; border-radius: 3px; }
+    .tag { font-size: .75rem; background: #e8f0fe; color: #1967d2; border-radius: 8px; padding: 0 .4rem; }
+  </style>
+</head>
+<body>
+  <h1>Warehouse challenge — level <span id="level">?</span></h1>
+  <p class="sub">Answer each question using <b>either</b> the MCP servers (one per data source) <b>or</b> the A2A agent. One table per query; combine sources yourself (MCP) or let the agent do it (A2A).</p>
+  <p class="levels" id="levels"></p>
+
+  <h2>Questions</h2>
+  <table id="questions"><tr><th>#</th><th>Question</th><th>Sources needed</th></tr></table>
+
+  <h2>AI Catalog</h2>
+  <p>Machine-readable: <a href="/catalog.json"><code>/catalog.json</code></a></p>
+  <table id="mcp"><tr><th>MCP server</th><th>URL (streamable HTTP)</th><th>Tools</th></tr></table>
+  <table id="a2a"><tr><th>A2A agent</th><th>Agent Card</th><th>URL</th></tr></table>
+
+  <p class="sub" id="rules"></p>
+
+  <script>
+    const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+    const row = cells => "<tr>" + cells.map(c => "<td>" + c + "</td>").join("") + "</tr>";
+    (async () => {
+      const cat = await (await fetch("/catalog.json")).json();
+      const tally = await (await fetch("/tally.json")).json();
+      document.getElementById("level").textContent = cat.level;
+      document.getElementById("levels").innerHTML = [1,2,3,4,5].map(l =>
+        `<a class="${l === cat.level ? "on" : ""}" href="http://localhost:${8000 + l}/">Level ${l}</a>`).join("");
+      const q = document.getElementById("questions");
+      tally.questions.forEach((x, i) => q.insertAdjacentHTML("beforeend",
+        row([esc(x.id), esc(x.question), `<span class="tag">${esc(x.sources_needed.length)}</span> ${esc(x.sources_needed.join(", "))}`])));
+      if (!tally.questions.length) q.insertAdjacentHTML("beforeend", row(["—", "No questions published for this level yet.", ""]));
+      const m = document.getElementById("mcp");
+      cat.mcp_servers.forEach(s => m.insertAdjacentHTML("beforeend",
+        row([esc(s.name), `<code>${esc(s.url)}</code>`, s.tools.map(t => `<code>${esc(t)}</code>`).join(" ")])));
+      const a = document.getElementById("a2a");
+      cat.a2a_agents.forEach(s => a.insertAdjacentHTML("beforeend",
+        row([esc(s.name), `<a href="${esc(s.agent_card)}"><code>${esc(s.agent_card)}</code></a>`, `<code>${esc(s.url)}</code>`])));
+      document.getElementById("rules").textContent =
+        `Rules: one table per query · ${cat.rules.row_cap} rows per page · ${cat.rules.source_latency_ms} ms simulated distance per source call.`;
+    })();
+  </script>
+</body>
+</html>

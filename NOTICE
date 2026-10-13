@@ -1,0 +1,24 @@
+a2a-mcp-warehouse-demo
+Copyright 2026 Sampath Kumar
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+-------------------------------------------------------------------------------
+Third-party data
+
+The CSV files in demo-app/data/ are derived from synthetic data produced by
+the Jaffle Shop Generator ("jafgen"), Copyright dbt Labs, Inc. and
+contributors, licensed under the Apache License, Version 2.0.
+  Source:  https://github.com/dbt-labs/jaffle-shop-generator
+  Version: jafgen 0.4.14 (PyPI)
+  Command: uvx --python 3.12 jafgen@0.4.14 3
+
+This project is not affiliated with or endorsed by dbt Labs.
+
+Modifications made to the generated data (demo-app/data/prepare.py):
+  * kept 10% of orders, selected by md5(order id);
+  * kept only order items that belong to kept orders;
+  * renamed files (raw_items -> order_items, dropped the "raw_" prefix);
+  * dropped raw_supplies and raw_tweets.
+
+All names and records are synthetic. No real customer data is included.

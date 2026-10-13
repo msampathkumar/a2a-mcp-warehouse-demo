@@ -1,0 +1,41 @@
+{
+  "batch": "20261013-211855-L1-v2-fbad",
+  "level": 1,
+  "trials": 1,
+  "paths": "mcp,a2a",
+  "questions": [
+    "L1-Q01",
+    "L1-Q02",
+    "L1-Q03",
+    "L1-Q04",
+    "L1-Q05",
+    "L1-Q06",
+    "L1-Q07",
+    "L1-Q08",
+    "L1-Q09",
+    "L1-Q10"
+  ],
+  "client_model": "gemini-3.5-flash-lite",
+  "client_cache": {
+    "enabled": true,
+    "ttl_min": 60.0
+  },
+  "max_client_llm_calls": 25,
+  "server_config": {
+    "level": 1,
+    "tables": [
+      "orders"
+    ],
+    "row_cap": 500,
+    "source_latency_ms": 100,
+    "cache_enabled": true,
+    "cache_ttl_min": 60.0,
+    "notes_enabled": true,
+    "model": "gemini-3.5-flash-lite",
+    "max_agent_llm_calls": 25,
+    "playbook_enabled": true
+  },
+  "base_url": "http://localhost:8001",
+  "started_at": "2026-10-13T21:18:55.549580+00:00",
+  "finished_at": "2026-10-13T21:21:12.436422+00:00"
+}
