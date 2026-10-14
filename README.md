@@ -13,6 +13,18 @@
 
 **How we know:** 5 data tables, each in a different "place". Path 1: 5 MCP connections, one per table. Path 2: 1 A2A agent (Google ADK) connected to the same 5 tables. Both can read only one table per query. We grew from 1 table to 5 and ran 50 questions × 5 trials through each path: 250 runs per path, 500 in all, every call traced.
 
+**What we're building:**
+
+```mermaid
+flowchart LR
+  U[User's agent] -->|MCP: N connections, many calls| S1[(orders)] & S2[(stores)] & S3[(customers)] & S4[(order_items)] & S5[(products)]
+  U -->|A2A: 1 message| R[Remote analyst agent + playbook]
+  R --> S1 & S2 & S3 & S4 & S5
+```
+
+- **MCP path:** your agent connects to one MCP server per table and joins the data itself.
+- **A2A path:** your agent sends one question to a remote agent that reaches every table, joins, and returns the answer.
+
 Read the story: [**blog post**](docs/blog.md) · method and limitations: [report](docs/report.md) · [charts](docs/charts/) · [statistics](docs/results/stats.md)
 
 ## Results at a glance

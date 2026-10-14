@@ -33,6 +33,7 @@ Values are means per question attempt. Calls from the user's agent = MCP tool ca
 ## Charts (by sources needed)
 
 ```mermaid
+%%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#d93025, #1a73e8"}}}}%%
 xychart-beta
     title "Calls from the user's agent per question"
     x-axis ["1", "2", "3", "4", "5"]
@@ -41,9 +42,10 @@ xychart-beta
     line [1.00, 1.00, 1.17, 1.00, 1.00]
 ```
 
-First line: MCP path. Second line: A2A path.
+Red line: MCP path · Blue line: A2A path.
 
 ```mermaid
+%%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#d93025, #1a73e8"}}}}%%
 xychart-beta
     title "End-to-end seconds per question"
     x-axis ["1", "2", "3", "4", "5"]
@@ -52,9 +54,10 @@ xychart-beta
     line [6.67, 13.64, 24.53, 24.64, 18.95]
 ```
 
-First line: MCP path. Second line: A2A path.
+Red line: MCP path · Blue line: A2A path.
 
 ```mermaid
+%%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#d93025, #1a73e8"}}}}%%
 xychart-beta
     title "Tokens in the user's agent per question"
     x-axis ["1", "2", "3", "4", "5"]
@@ -63,5 +66,5 @@ xychart-beta
     line [462.41, 479.61, 601.17, 551.00, 615.00]
 ```
 
-First line: MCP path. Second line: A2A path.
+Red line: MCP path · Blue line: A2A path.
 
