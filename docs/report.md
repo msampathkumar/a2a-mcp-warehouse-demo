@@ -60,6 +60,7 @@ Shared rules: read-only, one table per query (validated with `sqlglot`, enforced
 Means per attempt over 5 trials. "Calls from the user's agent" = MCP tool calls that reached a server (cache hits excluded) or A2A messages sent.
 
 ```mermaid
+%%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#d93025, #1a73e8"}}}}%%
 xychart-beta
     title "Calls from the user's agent per question (MCP rises, A2A stays at 1)"
     x-axis "Sources needed" ["1", "2", "3", "4", "5"]
@@ -67,6 +68,8 @@ xychart-beta
     line [2.6, 43.6, 77.6, 79.0, 72.4]
     line [1.0, 1.0, 1.0, 1.0, 1.0]
 ```
+
+Red line: MCP path · Blue line: A2A path.
 
 ### The playbook's effect (A2A path, v1 → v2)
 

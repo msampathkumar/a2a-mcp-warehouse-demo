@@ -83,6 +83,7 @@ def _xychart(
     top = max([*m, *a, 1]) * 1.15
     return [
         '```mermaid',
+        '%%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#d93025, #1a73e8"}}}}%%',  # red = MCP, blue = A2A
         'xychart-beta',
         f'    title "{title}"',
         '    x-axis [' + ', '.join(f'"{x}"' for x in xs) + ']',
@@ -91,7 +92,7 @@ def _xychart(
         '    line [' + ', '.join(f'{v:.2f}' for v in a) + ']',
         '```',
         '',
-        'First line: MCP path. Second line: A2A path.',
+        'Red line: MCP path · Blue line: A2A path.',
         '',
     ]
 
