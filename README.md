@@ -90,13 +90,13 @@ flowchart LR
 
 ## Levels
 
-| Level | Tables | Questions |
-| :---: | :--- | :---: |
-| 1 | orders | 10 |
-| 2 | + stores | 10 |
-| 3 | + customers | 10 |
-| 4 | + order_items | 10 |
-| 5 | + products | 10 |
+| Level | Tables | Columns | Rows | Questions |
+| :---: | :--- | ---: | ---: | :---: |
+| 1 | orders | 7 | 66,375 | 10 |
+| 2 | + stores | 4 | 6 | 10 |
+| 3 | + customers | 2 | 2,583 | 10 |
+| 4 | + order_items | 3 | 99,753 | 10 |
+| 5 | + products | 5 | 10 | 10 |
 
 Data: synthetic, from [jafgen](https://github.com/dbt-labs/jaffle-shop-generator) (Apache-2.0). See [`NOTICE`](NOTICE) and [`demo-app/data/README.md`](demo-app/data/README.md).
 

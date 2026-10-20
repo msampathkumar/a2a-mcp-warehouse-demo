@@ -1,6 +1,6 @@
 [project]
 name = "a2a-mcp-warehouse-demo"
-version = "0.2.0b0"
+version = "0.2.0"
 description = "When to use MCP vs A2A: a measured data-warehouse demo."
 readme = "README.md"
 license = "Apache-2.0"

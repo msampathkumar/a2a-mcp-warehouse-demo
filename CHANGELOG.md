@@ -2,6 +2,13 @@
 
 All notable changes to this project. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] — 2026-10-20
+
+### Changed
+
+- `README.md`: added `Columns` and `Rows` columns to the `#levels` table, and added the user's-agent vs remote-agent architecture diagram.
+- `docs/report.md`, `docs/results/summary.md`, `docs/results/summary-v1.md`, `test-app/harness/summary.py`: red/blue line colors (`#d93025` / `#1a73e8`) for MCP vs A2A charts.
+
 ## [0.2.0-beta] — 2026-10-13
 
 First public release. Beta: the method and numbers may change as more trials run.
