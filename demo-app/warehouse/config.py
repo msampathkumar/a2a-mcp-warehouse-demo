@@ -66,6 +66,35 @@ class Settings:
     admin_token: str = field(
         default_factory=lambda: os.environ.get('ADMIN_TOKEN', '')
     )
+    public_demo: bool = field(
+        default_factory=lambda: _bool('PUBLIC_DEMO', False)
+    )
+    max_input_chars: int = field(
+        default_factory=lambda: int(os.environ.get('MAX_INPUT_CHARS', '600'))
+    )
+    a2a_rate_limit_per_min: int = field(
+        default_factory=lambda: int(
+            os.environ.get('A2A_RATE_LIMIT_PER_MIN', '10')
+        )
+    )
+    a2a_daily_cap: int = field(
+        default_factory=lambda: int(os.environ.get('A2A_DAILY_CAP', '500'))
+    )
+    a2a_enabled: bool = field(
+        default_factory=lambda: _bool('A2A_ENABLED', True)
+    )
+    isolated_warehouses: bool = field(
+        default_factory=lambda: _bool('ISOLATED_WAREHOUSES', True)
+    )
+    cloud_logging: bool = field(
+        default_factory=lambda: _bool('CLOUD_LOGGING', False)
+    )
+    bq_telemetry_table: str = field(
+        default_factory=lambda: os.environ.get('BQ_TELEMETRY_TABLE', '').strip()
+    )
+    bq_location: str = field(
+        default_factory=lambda: os.environ.get('BQ_LOCATION', 'us-central1').strip()
+    )
 
     def __post_init__(self) -> None:
         if not 1 <= self.level <= len(TABLE_ORDER):
@@ -104,4 +133,11 @@ class Settings:
             'model': self.model,
             'max_agent_llm_calls': self.max_agent_llm_calls,
             'playbook_enabled': self.playbook_enabled,
+            'public_demo': self.public_demo,
+            'max_input_chars': self.max_input_chars,
+            'a2a_rate_limit_per_min': self.a2a_rate_limit_per_min,
+            'a2a_daily_cap': self.a2a_daily_cap,
+            'a2a_enabled': self.a2a_enabled,
+            'isolated_warehouses': self.isolated_warehouses,
+            'bq_telemetry_table': self.bq_telemetry_table,
         }

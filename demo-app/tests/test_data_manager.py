@@ -108,3 +108,24 @@ def test_paging_is_consistent_without_order_by(dm_level5):
             break
         page += 1
     assert len(seen) == len(set(seen)) == 2551  # all distinct customers, no duplicates
+
+
+def test_each_table_has_its_own_isolated_duckdb_warehouse(dm_level5):
+    """Each MCP source connects to its own separate <table_name>.duckdb file."""
+    import duckdb
+
+    assert len(dm_level5._db_paths) == 5
+    for table, db_path in dm_level5._db_paths.items():
+        assert db_path.name == f'{table}.duckdb'
+        # Verify the other 4 tables physically do not exist inside this DuckDB file
+        tables_in_db = [
+            r[0] for r in dm_level5._cons[table].execute('SHOW TABLES').fetchall()
+        ]
+        assert tables_in_db == [table]
+        for other in dm_level5.tables:
+            if other != table:
+                with pytest.raises(duckdb.Error):
+                    dm_level5._cons[table].execute(
+                        f'SELECT count(*) FROM "{other}"'
+                    )
+
