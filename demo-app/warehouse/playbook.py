@@ -22,8 +22,8 @@ JOIN_KEYS = {
 def build_playbook(settings, dm) -> str:
     text = (Path(__file__).parent / "playbook.md").read_text()
     lines = ["", "## Data dictionary (this level)", ""]
-    con = dm._con.cursor()
     for t in dm.tables:
+        con = dm._cons[t].cursor()
         cols = ", ".join(f"{c} {ty}" for c, ty in dm._schemas[t])
         lines.append(f"### {t} — {dm._row_counts[t]:,} rows")
         lines.append(f"- Columns: {cols}")
@@ -39,6 +39,6 @@ def build_playbook(settings, dm) -> str:
                 lines.append("| " + " | ".join(str(v) for v in r) + " |")
         lines.append("")
     if "orders" in dm.tables:
-        lo, hi = con.execute("SELECT min(ordered_at), max(ordered_at) FROM orders").fetchone()
+        lo, hi = dm._cons["orders"].cursor().execute("SELECT min(ordered_at), max(ordered_at) FROM orders").fetchone()
         lines.append(f"orders.ordered_at range: {lo} to {hi}.")
     return text + "\n".join(lines)

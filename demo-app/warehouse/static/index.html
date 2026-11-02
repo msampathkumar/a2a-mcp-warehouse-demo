@@ -3,56 +3,199 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>A2A + MCP warehouse challenge</title>
+  <title>Distributed Data Warehouse — 5 Isolated MCP Servers &amp; Live Telemetry</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; color: #202124; }
-    h1 { font-size: 1.6rem; margin-bottom: .2rem; }
-    .sub { color: #5f6368; margin-top: 0; }
-    .levels a { margin-right: .6rem; }
-    .levels a.on { font-weight: 700; text-decoration: none; color: #202124; }
-    table { border-collapse: collapse; width: 100%; margin: .8rem 0 1.6rem; }
-    th, td { border: 1px solid #dadce0; padding: .45rem .6rem; text-align: left; vertical-align: top; font-size: .92rem; }
-    th { background: #f1f3f4; }
-    code { background: #f1f3f4; padding: 0 .25rem; border-radius: 3px; }
-    .tag { font-size: .75rem; background: #e8f0fe; color: #1967d2; border-radius: 8px; padding: 0 .4rem; }
+    :root {
+      --bg: #ffffff;
+      --fg: #202124;
+      --muted: #5f6368;
+      --border: #dadce0;
+      --surface: #f8f9fa;
+      --accent: #1a73e8;
+      --accent-bg: #e8f0fe;
+      --ok: #137333;
+      --ok-bg: #e6f4ea;
+    }
+    body { font-family: system-ui, -apple-system, sans-serif; max-width: 980px; margin: 2rem auto; padding: 0 1rem; color: var(--fg); background: var(--bg); line-height: 1.5; }
+    h1 { font-size: 1.7rem; margin-bottom: .25rem; }
+    h2 { font-size: 1.22rem; margin-top: 2rem; margin-bottom: .5rem; }
+    .sub { color: var(--muted); margin-top: 0; }
+    .nav { font-size: .9rem; margin-bottom: .75rem; color: var(--muted); }
+    .nav a { color: var(--accent); text-decoration: none; }
+    .nav a:hover { text-decoration: underline; }
+    .levels a { margin-right: .6rem; color: var(--accent); }
+    .levels a.on { font-weight: 700; text-decoration: none; color: var(--fg); }
+    .info-box { border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 6px; padding: .9rem 1.1rem; background: var(--surface); margin: 1rem 0 1.4rem; font-size: .92rem; }
+    .info-box p { margin: .35rem 0; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .85rem; margin: .8rem 0 1.6rem; }
+    .card { border: 1px solid var(--border); border-radius: 8px; padding: .85rem 1rem; background: var(--surface); }
+    .card .label { font-size: .76rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+    .card .val { font-size: 1.65rem; font-weight: 700; margin-top: .2rem; color: var(--fg); font-variant-numeric: tabular-nums; }
+    .card .hint { font-size: .76rem; color: var(--muted); margin-top: .15rem; }
+    table { border-collapse: collapse; width: 100%; margin: .7rem 0 1.5rem; }
+    th, td { border: 1px solid var(--border); padding: .5rem .65rem; text-align: left; vertical-align: top; font-size: .89rem; }
+    th { background: #f1f3f4; font-weight: 600; }
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    code { background: #f1f3f4; padding: .1rem .3rem; border-radius: 4px; font-size: .84rem; }
+    pre { background: #202124; color: #f1f3f4; padding: .85rem 1rem; border-radius: 6px; overflow-x: auto; font-size: .82rem; line-height: 1.45; margin: .6rem 0 1.2rem; }
+    pre code { background: none; color: inherit; padding: 0; }
+    .tag { font-size: .74rem; background: var(--accent-bg); color: var(--accent); border-radius: 8px; padding: .1rem .45rem; font-weight: 600; }
+    .badge-ok { font-size: .74rem; background: var(--ok-bg); color: var(--ok); border-radius: 8px; padding: .1rem .45rem; font-weight: 600; }
   </style>
 </head>
 <body>
-  <h1>Warehouse challenge — level <span id="level">?</span></h1>
-  <p class="sub">Answer each question using <b>either</b> the MCP servers (one per data source) <b>or</b> the A2A agent. One table per query; combine sources yourself (MCP) or let the agent do it (A2A).</p>
+  <div class="nav"><a href="https://msampathkumar.com/">&larr; msampathkumar.com</a> &middot; <a href="https://github.com/msampathkumar/a2a-mcp-warehouse-demo">GitHub Repo &amp; 500-Run Report</a></div>
+  <h1>Warehouse challenge — 5 Isolated MCP Servers <span id="level-wrap" style="font-weight:400; color:#5f6368; font-size:1.1rem;">(Level <span id="level">5</span>)</span></h1>
+  <p class="sub">Five separate, read-only local DuckDB data warehouses (synthetic <a href="https://github.com/dbt-labs/jaffle-shop-generator">Jaffle Shop</a> data), each surfaced behind its own streamable-HTTP MCP server. Connect your coding agent or custom harness to compare multi-source MCP querying against A2A delegation.</p>
   <p class="levels" id="levels"></p>
 
-  <h2>Questions</h2>
-  <table id="questions"><tr><th>#</th><th>Question</th><th>Sources needed</th></tr></table>
+  <div class="info-box">
+    <p><b>How this sandbox works:</b></p>
+    <p>1. <b>Physical isolation:</b> Each table lives in its own locked, read-only DuckDB file (<code>orders.duckdb</code>, <code>stores.duckdb</code>, <code>customers.duckdb</code>, <code>order_items.duckdb</code>, <code>products.duckdb</code>). Cross-table SQL <code>JOIN</code>, <code>CTE</code>, or <code>UNION</code> queries at a source are rejected.</p>
+    <p>2. <b>Paging &amp; simulated distance:</b> Every source returns at most <b>500 rows per page</b> (pass <code>page=2, 3, ...</code> while <code>more: true</code>) and adds a <b>100 ms simulated network delay</b> per call. Money columns (<code>subtotal</code>, <code>tax_paid</code>, <code>order_total</code>, <code>price</code>) are in integer <b>cents</b>.</p>
+    <p>3. <b>Zero-load &amp; durable telemetry:</b> Refreshing this page reads <code><a href="metrics.json">/metrics.json</a></code> from in-memory atomic counters in &lt;1 ms (hydrated from BigQuery on cold start and streamed asynchronously on every MCP call) so page reloads never touch DuckDB or run BigQuery queries.</p>
+  </div>
 
-  <h2>AI Catalog</h2>
-  <p>Machine-readable: <a href="/catalog.json"><code>/catalog.json</code></a></p>
-  <table id="mcp"><tr><th>MCP server</th><th>URL (streamable HTTP)</th><th>Tools</th></tr></table>
-  <table id="a2a"><tr><th>A2A agent</th><th>Agent Card</th><th>URL</th></tr></table>
+  <h2>Live MCP Telemetry</h2>
+  <div class="cards">
+    <div class="card">
+      <div class="label">Total MCP Calls</div>
+      <div class="val" id="m-total">0</div>
+      <div class="hint" id="m-total-hint">All-time (BigQuery-backed)</div>
+    </div>
+    <div class="card">
+      <div class="label">Calls (Last 7 Days)</div>
+      <div class="val" id="m-7d">0</div>
+      <div class="hint">Rolling 7-day UTC window</div>
+    </div>
+    <div class="card">
+      <div class="label">Calls (Last 24 Hours)</div>
+      <div class="val" id="m-24h">0</div>
+      <div class="hint">Rolling 24-hour window</div>
+    </div>
+    <div class="card">
+      <div class="label">Rejected / Errors</div>
+      <div class="val" id="m-err">0</div>
+      <div class="hint">SQL rule violations blocked</div>
+    </div>
+  </div>
+
+  <h2>5 Isolated Data Warehouses &amp; MCP Endpoints</h2>
+  <p>Machine-readable catalog: <a href="catalog.json"><code>/catalog.json</code></a> &middot; Live metrics JSON: <a href="metrics.json"><code>/metrics.json</code></a></p>
+  <table id="mcp">
+    <tr>
+      <th>MCP Server</th>
+      <th>Isolated Warehouse</th>
+      <th class="num">Cols</th>
+      <th class="num">Rows</th>
+      <th>Streamable-HTTP Endpoint</th>
+      <th>Tools</th>
+      <th class="num">Total Calls</th>
+      <th class="num">7d Calls</th>
+      <th class="num">Avg ms</th>
+    </tr>
+  </table>
+
+  <h2>Schema &amp; Join Keys Across Warehouses</h2>
+  <table>
+    <tr><th>Warehouse</th><th>Key Columns &amp; Relationships</th><th>Notes</th></tr>
+    <tr><td><code>orders.duckdb</code></td><td><code>id</code> (PK), <code>customer</code> &rarr; <code>customers.id</code>, <code>store_id</code> &rarr; <code>stores.id</code>, <code>ordered_at</code>, <code>subtotal</code>, <code>tax_paid</code>, <code>order_total</code></td><td>66,375 rows &middot; 2018-09-01 to 2021-08-30 &middot; cents</td></tr>
+    <tr><td><code>stores.duckdb</code></td><td><code>id</code> (PK), <code>name</code>, <code>opened_at</code>, <code>tax_rate</code></td><td>6 stores (Philadelphia, Brooklyn, Chicago, San Francisco, New Orleans, ...)</td></tr>
+    <tr><td><code>customers.duckdb</code></td><td><code>id</code> (PK), <code>name</code></td><td>2,583 customers (81 share a name; group by <code>id</code>, not <code>name</code>)</td></tr>
+    <tr><td><code>order_items.duckdb</code></td><td><code>id</code> (PK), <code>order_id</code> &rarr; <code>orders.id</code>, <code>sku</code> &rarr; <code>products.sku</code></td><td>99,753 line items</td></tr>
+    <tr><td><code>products.duckdb</code></td><td><code>sku</code> (PK), <code>name</code>, <code>type</code> (<code>jaffle</code> / <code>beverage</code>), <code>price</code>, <code>description</code></td><td>10 products &middot; <code>price</code> in cents</td></tr>
+  </table>
+
+  <h2>Quick Connect (Gemini CLI / Claude Code / Antigravity / MCP Inspector)</h2>
+  <pre><code id="mcp-snippet">{
+  "mcpServers": {
+    "warehouse-orders":      { "type": "http", "url": "https://msampathkumar.com/demos/data-warehouse/orders/" },
+    "warehouse-stores":      { "type": "http", "url": "https://msampathkumar.com/demos/data-warehouse/stores/" },
+    "warehouse-customers":   { "type": "http", "url": "https://msampathkumar.com/demos/data-warehouse/customers/" },
+    "warehouse-order_items": { "type": "http", "url": "https://msampathkumar.com/demos/data-warehouse/order_items/" },
+    "warehouse-products":    { "type": "http", "url": "https://msampathkumar.com/demos/data-warehouse/products/" }
+  }
+}</code></pre>
+
+  <div id="a2a-section" style="display:none;">
+    <h2>A2A Agent</h2>
+    <table id="a2a"><tr><th>A2A agent</th><th>Agent Card</th><th>URL</th></tr></table>
+  </div>
+
+  <h2>Challenge Questions (<span id="q-count">0</span>)</h2>
+  <table id="questions"><tr><th>#</th><th>Level</th><th>Question</th><th>Warehouses Needed</th></tr></table>
 
   <p class="sub" id="rules"></p>
 
   <script>
     const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-    const row = cells => "<tr>" + cells.map(c => "<td>" + c + "</td>").join("") + "</tr>";
+    const fmt = n => Number(n || 0).toLocaleString();
+    const row = cells => "<tr>" + cells.map(c => {
+      if (typeof c === "object" && c !== null && "html" in c) {
+        return `<td class="${c.cls || ""}">${c.html}</td>`;
+      }
+      return `<td>${c}</td>`;
+    }).join("") + "</tr>";
+
     (async () => {
-      const cat = await (await fetch("/catalog.json")).json();
-      const tally = await (await fetch("/tally.json")).json();
+      const [cat, tally, met] = await Promise.all([
+        fetch("catalog.json").then(r => r.json()),
+        fetch("tally.json").then(r => r.json()),
+        fetch("metrics.json").then(r => r.json()).catch(() => null),
+      ]);
+
       document.getElementById("level").textContent = cat.level;
-      document.getElementById("levels").innerHTML = [1,2,3,4,5].map(l =>
-        `<a class="${l === cat.level ? "on" : ""}" href="http://localhost:${8000 + l}/">Level ${l}</a>`).join("");
-      const q = document.getElementById("questions");
-      tally.questions.forEach((x, i) => q.insertAdjacentHTML("beforeend",
-        row([esc(x.id), esc(x.question), `<span class="tag">${esc(x.sources_needed.length)}</span> ${esc(x.sources_needed.join(", "))}`])));
-      if (!tally.questions.length) q.insertAdjacentHTML("beforeend", row(["—", "No questions published for this level yet.", ""]));
+      if (!cat.config || !cat.config.public_demo) {
+        document.getElementById("levels").innerHTML = [1,2,3,4,5].map(l =>
+          `<a class="${l === cat.level ? "on" : ""}" href="http://localhost:${8000 + l}/">Level ${l}</a>`).join("");
+      }
+
+      if (met) {
+        document.getElementById("m-total").textContent = fmt(met.total_mcp_calls);
+        document.getElementById("m-7d").textContent = fmt(met.calls_last_7d);
+        document.getElementById("m-24h").textContent = fmt(met.calls_last_24h);
+        document.getElementById("m-err").textContent = fmt(met.total_errors);
+      }
+
       const m = document.getElementById("mcp");
-      cat.mcp_servers.forEach(s => m.insertAdjacentHTML("beforeend",
-        row([esc(s.name), `<code>${esc(s.url)}</code>`, s.tools.map(t => `<code>${esc(t)}</code>`).join(" ")])));
-      const a = document.getElementById("a2a");
-      cat.a2a_agents.forEach(s => a.insertAdjacentHTML("beforeend",
-        row([esc(s.name), `<a href="${esc(s.agent_card)}"><code>${esc(s.agent_card)}</code></a>`, `<code>${esc(s.url)}</code>`])));
+      const snippetObj = { mcpServers: {} };
+      cat.mcp_servers.forEach(s => {
+        snippetObj.mcpServers[s.name] = { type: "http", url: s.url };
+        const pw = (met && met.per_warehouse && met.per_warehouse[s.table]) || {};
+        m.insertAdjacentHTML("beforeend", row([
+          `<b>${esc(s.name)}</b>`,
+          `<span class="badge-ok">${esc(s.warehouse_db || (s.table + ".duckdb"))}</span>`,
+          { html: fmt(s.columns), cls: "num" },
+          { html: fmt(s.rows), cls: "num" },
+          `<code>${esc(s.url)}</code>`,
+          s.tools.map(t => `<code>${esc(t)}</code>`).join(" "),
+          { html: fmt(pw.calls_total), cls: "num" },
+          { html: fmt(pw.calls_7d), cls: "num" },
+          { html: `${pw.avg_ms || 0} ms`, cls: "num" },
+        ]));
+      });
+      document.getElementById("mcp-snippet").textContent = JSON.stringify(snippetObj, null, 2);
+
+      if (cat.a2a_agents && cat.a2a_agents.length > 0) {
+        document.getElementById("a2a-section").style.display = "block";
+        const a = document.getElementById("a2a");
+        cat.a2a_agents.forEach(s => a.insertAdjacentHTML("beforeend",
+          row([esc(s.name), `<a href="${esc(s.agent_card)}"><code>${esc(s.agent_card)}</code></a>`, `<code>${esc(s.url)}</code>`])));
+      }
+
+      const q = document.getElementById("questions");
+      document.getElementById("q-count").textContent = tally.questions.length;
+      tally.questions.forEach(x => q.insertAdjacentHTML("beforeend",
+        row([
+          `<code>${esc(x.id)}</code>`,
+          `Level ${esc(x.level)}`,
+          esc(x.question),
+          `<span class="tag">${esc(x.sources_needed.length)}</span> ${esc(x.sources_needed.join(", "))}`,
+        ])));
+      if (!tally.questions.length) q.insertAdjacentHTML("beforeend", row(["—", "—", "No questions published for this level yet.", ""]));
+
       document.getElementById("rules").textContent =
-        `Rules: one table per query · ${cat.rules.row_cap} rows per page · ${cat.rules.source_latency_ms} ms simulated distance per source call.`;
+        `Rules: isolated DuckDB warehouse per MCP server · one table per query · ${cat.rules.row_cap} rows per page · ${cat.rules.source_latency_ms} ms simulated distance per source call.`;
     })();
   </script>
 </body>
