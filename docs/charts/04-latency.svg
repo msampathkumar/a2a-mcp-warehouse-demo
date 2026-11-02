@@ -59,11 +59,11 @@
 <rect x="475.3" y="212.3" width="13.5" height="45.7" fill="#1a73e8"/>
 <text x="482.0" y="209.3" text-anchor="middle" font-size="9" fill="#202124">16.8</text>
 <rect x="66" y="304" width="10" height="10" fill="#f28b82"/>
-<text x="80" y="313" fill="#202124">MCP p50</text>
-<rect x="145" y="304" width="10" height="10" fill="#d93025"/>
-<text x="159" y="313" fill="#202124">MCP p90</text>
-<rect x="224" y="304" width="10" height="10" fill="#8ab4f8"/>
-<text x="238" y="313" fill="#202124">A2A p50</text>
-<rect x="303" y="304" width="10" height="10" fill="#1a73e8"/>
-<text x="317" y="313" fill="#202124">A2A p90</text>
+<text x="80" y="313" fill="#202124">MCP over API p50</text>
+<rect x="192" y="304" width="10" height="10" fill="#d93025"/>
+<text x="206" y="313" fill="#202124">p90</text>
+<rect x="240" y="304" width="10" height="10" fill="#8ab4f8"/>
+<text x="254" y="313" fill="#202124">A2A over APIs p50</text>
+<rect x="372" y="304" width="10" height="10" fill="#1a73e8"/>
+<text x="386" y="313" fill="#202124">p90</text>
 </svg>

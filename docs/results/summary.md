@@ -12,7 +12,7 @@ Values are means per question attempt. Calls from the user's agent = MCP tool ca
 
 ## By number of sources a question needs
 
-| Sources | Questions | Correct MCP | Correct A2A | Calls from user's agent (MCP) | Calls from user's agent (A2A) | DataManager calls (MCP) | DataManager calls (A2A) | End-to-end s (MCP) | End-to-end s (A2A) | Tokens: user's agent (MCP) | Tokens: user's agent (A2A) | Tokens: total (A2A) |
+| Sources | Questions | Correct (MCP over API) | Correct (A2A over APIs) | Calls from user's agent (MCP over API) | Calls from user's agent (A2A over APIs) | DataManager calls (MCP over API) | DataManager calls (A2A over APIs) | End-to-end s (MCP over API) | End-to-end s (A2A over APIs) | Tokens: user's agent (MCP over API) | Tokens: user's agent (A2A over APIs) | Tokens: total (A2A over APIs) |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | 1 | 22 | 100% | 99% | 2.6 | 1.0 | 2.6 | 2.0 | 10.1 | 5.9 | 4,820 | 463 | 6,730 |
 | 2 | 18 | 92% | 98% | 43.6 | 1.0 | 43.6 | 7.3 | 17.5 | 8.8 | 20,573 | 487 | 15,301 |
@@ -22,7 +22,7 @@ Values are means per question attempt. Calls from the user's agent = MCP tool ca
 
 ## By level
 
-| Level | Questions | Correct MCP | Correct A2A | Calls from user's agent (MCP) | Calls from user's agent (A2A) | DataManager calls (MCP) | DataManager calls (A2A) | End-to-end s (MCP) | End-to-end s (A2A) | Tokens: user's agent (MCP) | Tokens: user's agent (A2A) | Tokens: total (A2A) |
+| Level | Questions | Correct (MCP over API) | Correct (A2A over APIs) | Calls from user's agent (MCP over API) | Calls from user's agent (A2A over APIs) | DataManager calls (MCP over API) | DataManager calls (A2A over APIs) | End-to-end s (MCP over API) | End-to-end s (A2A over APIs) | Tokens: user's agent (MCP over API) | Tokens: user's agent (A2A over APIs) | Tokens: total (A2A over APIs) |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | 1 | 10 | 100% | 100% | 1.1 | 1.0 | 1.1 | 1.0 | 8.0 | 5.8 | 3,080 | 473 | 5,672 |
 | 2 | 10 | 98% | 98% | 9.0 | 1.0 | 9.0 | 10.5 | 11.1 | 9.3 | 11,302 | 472 | 14,432 |
@@ -42,7 +42,7 @@ xychart-beta
     line [1.00, 1.00, 1.00, 1.00, 1.00]
 ```
 
-Red line: MCP path · Blue line: A2A path.
+Red line: MCP over API · Blue line: A2A over APIs.
 
 ```mermaid
 %%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#d93025, #1a73e8"}}}}%%
@@ -54,7 +54,7 @@ xychart-beta
     line [5.88, 8.81, 8.53, 9.38, 12.90]
 ```
 
-Red line: MCP path · Blue line: A2A path.
+Red line: MCP over API · Blue line: A2A over APIs.
 
 ```mermaid
 %%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#d93025, #1a73e8"}}}}%%
@@ -66,5 +66,5 @@ xychart-beta
     line [463.15, 487.11, 545.03, 552.07, 629.00]
 ```
 
-Red line: MCP path · Blue line: A2A path.
+Red line: MCP over API · Blue line: A2A over APIs.
 

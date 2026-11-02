@@ -1,4 +1,4 @@
-# When to use MCP, and when to use A2A — a measured demo
+# MCP over API vs A2A over APIs — a measured demo
 
 [![CI](https://github.com/msampathkumar/a2a-mcp-warehouse-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/msampathkumar/a2a-mcp-warehouse-demo/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/msampathkumar/a2a-mcp-warehouse-demo?include_prereleases)](https://github.com/msampathkumar/a2a-mcp-warehouse-demo/releases)
@@ -8,10 +8,14 @@
 
 **The short answer:**
 
-- **MCP** fits simple, linear requests: one source, one lookup.
-- **An A2A agent** fits questions that combine several sources. Someone has to fetch and join the data; in our test, an agent next to the data did it with fewer calls, fewer tokens on your side, and better accuracy.
+- **Your question needs any data aggregation (combining several sources)? Use an A2A agent**, and let the A2A agent manage the MCP/data connections. In our test, an agent next to the data did the fetching and joining with fewer calls, fewer tokens on your side, and better accuracy.
+- **A single, simple lookup? MCP over API** is the simplest fit.
 
-**How we know:** 5 data tables, each in a different "place". Path 1: 5 MCP connections, one per table. Path 2: 1 A2A agent (Google ADK) connected to the same 5 tables. Both can read only one table per query. We grew from 1 table to 5 and ran 50 questions × 5 trials through each path: 250 runs per path, 500 in all, every call traced.
+This is a real-world experiment, not a perfect benchmark: a stepping stone to build decisions on.
+
+Note: in this demo the A2A agent reaches the tables through direct tools over the same DataManager the MCP servers use ([`a2a_agent.py`](demo-app/warehouse/a2a_agent.py)), not through MCP. "Let the A2A agent manage the MCP connections" is the recommendation that follows from the results, not something we measured directly.
+
+**How we know:** 5 data tables, each in a different "place". Path 1, **MCP over API**: 5 MCP connections, one per table. Path 2, **A2A over APIs**: 1 A2A agent (Google ADK) connected to the same 5 tables. Both can read only one table per query. We grew from 1 table to 5 and ran 50 questions × 5 trials through each path: 250 runs per path, 500 in all, every call traced.
 
 **What we're building:**
 
@@ -22,14 +26,14 @@ flowchart LR
   R --> S1 & S2 & S3 & S4 & S5
 ```
 
-- **MCP path:** your agent connects to one MCP server per table and joins the data itself.
-- **A2A path:** your agent sends one question to a remote agent that reaches every table, joins, and returns the answer.
+- **MCP over API:** your agent connects to one MCP server per table and joins the data itself.
+- **A2A over APIs:** your agent sends one question to a remote agent that reaches every table, joins, and returns the answer.
 
 Read the story: [**blog post**](docs/blog.md) · method and limitations: [report](docs/report.md) · [charts](docs/charts/) · [statistics](docs/results/stats.md)
 
 ## Results at a glance
 
-| | MCP (5 connections) | A2A (1 agent) |
+| | MCP over API (5 connections) | A2A over APIs (1 agent) |
 | :--- | ---: | ---: |
 | Correct answers | 93.6% | 98.4% |
 | Calls your agent made | 8,077 | 250 |
@@ -37,23 +41,23 @@ Read the story: [**blog post**](docs/blog.md) · method and limitations: [report
 | Tokens in your agent | 6.05M | 0.12M |
 | Tokens in total | 6.05M | 3.22M |
 
-- **One source:** both paths are accurate; MCP is the simplest fit.
+- **One source:** both paths are accurate; MCP over API is the simplest fit.
 - **Several sources:** your agent makes 44–79 MCP calls per question, or sends 1 A2A message.
 - **Knowledge matters:** the A2A agent loads a [playbook](demo-app/warehouse/playbook.md) (OKRs, rules, workflows, data dictionary). That cut its source calls about 6× and its tokens 56%.
 
-### Model calls grow faster on MCP as sources grow
+### Model calls grow faster on MCP over API as sources grow
 
-![LLM calls per question, MCP vs A2A, by data sources needed](docs/charts/12-vs-llm-calls-by-sources.svg)
+![LLM calls per question, MCP over API vs A2A over APIs, by data sources needed](docs/charts/12-vs-llm-calls-by-sources.svg)
 
-| Sources needed | LLM calls per question (MCP / A2A) | Takeaway |
+| Sources needed | LLM calls per question (MCP over API / A2A over APIs) | Takeaway |
 | :---: | :---: | :--- |
-| 1 | 3.2 / 4.6 | **MCP wins.** Nothing to combine; a second agent adds overhead. |
+| 1 | 3.2 / 4.6 | **MCP over API wins.** Nothing to combine; a second agent adds overhead. |
 | 2 | 7.3 / 7.0 | **Tie.** The crossover point. |
-| 3 | 10.4 / 7.4 | **A2A wins.** Your agent hands off; the remote agent does the combining. |
-| 4 | 12.4 / 8.5 | **A2A wins.** |
-| 5 | 17.6 / 11.4 | **A2A wins.** MCP needs ~1.5× the model calls. |
+| 3 | 10.4 / 7.4 | **A2A over APIs wins.** Your agent hands off; the remote agent does the combining. |
+| 4 | 12.4 / 8.5 | **A2A over APIs wins.** |
+| 5 | 17.6 / 11.4 | **A2A over APIs wins.** MCP over API needs ~1.5× the model calls. |
 
-LLM calls count both agents on the A2A path (your agent + the remote agent). Means over 5 trials; the 5-source row is one question.
+LLM calls count both agents on the A2A over APIs path (your agent + the remote agent). Means over 5 trials; the 5-source row is one question.
 
 ![Calls from your agent per question](docs/charts/01-user-calls.svg)
 ![Total tokens per question](docs/charts/06-total-tokens.svg)
@@ -65,8 +69,8 @@ Have you used both? Tell us what worked for you and what your use case is: open 
 ```mermaid
 flowchart LR
   subgraph Client["Your agent (test-app harness, Antigravity, Gemini CLI, ...)"]
-    M[MCP path]
-    A[A2A path]
+    M[MCP over API]
+    A[A2A over APIs]
   end
   subgraph Demo["demo-app (one LEVEL)"]
     MS1["/mcp/orders/"] & MS2["/mcp/stores/"] & MSN["/mcp/..."]

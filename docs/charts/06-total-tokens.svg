@@ -44,9 +44,9 @@
 <rect x="459.8" y="234.4" width="28.9" height="23.3" fill="#a8c7fa"/>
 <text x="474.3" y="231.4" text-anchor="middle" font-size="9" fill="#202124">43k</text>
 <rect x="66" y="304" width="10" height="10" fill="#d93025"/>
-<text x="80" y="313" fill="#202124">MCP: user's agent</text>
-<rect x="215" y="304" width="10" height="10" fill="#1a73e8"/>
-<text x="229" y="313" fill="#202124">A2A: user's agent</text>
-<rect x="364" y="304" width="10" height="10" fill="#a8c7fa"/>
-<text x="378" y="313" fill="#202124">A2A: remote agent</text>
+<text x="80" y="313" fill="#202124">MCP over API</text>
+<rect x="168" y="304" width="10" height="10" fill="#1a73e8"/>
+<text x="182" y="313" fill="#202124">A2A over APIs: user's agent</text>
+<rect x="360" y="304" width="10" height="10" fill="#a8c7fa"/>
+<text x="374" y="313" fill="#202124">+ remote agent</text>
 </svg>

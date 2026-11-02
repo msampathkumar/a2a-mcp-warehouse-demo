@@ -69,10 +69,13 @@ def _row(label, g) -> str:
     )
 
 
+# Names of the two compared paths (same as harness.charts).
+M, A = 'MCP over API', 'A2A over APIs'
+
 HEADER = (
-    "| {k} | Questions | Correct MCP | Correct A2A | Calls from user's agent (MCP) | Calls from user's agent (A2A) "
-    '| DataManager calls (MCP) | DataManager calls (A2A) | End-to-end s (MCP) | End-to-end s (A2A) '
-    "| Tokens: user's agent (MCP) | Tokens: user's agent (A2A) | Tokens: total (A2A) |\n"
+    f"| {{k}} | Questions | Correct ({M}) | Correct ({A}) | Calls from user's agent ({M}) | Calls from user's agent ({A}) "
+    f'| DataManager calls ({M}) | DataManager calls ({A}) | End-to-end s ({M}) | End-to-end s ({A}) '
+    f"| Tokens: user's agent ({M}) | Tokens: user's agent ({A}) | Tokens: total ({A}) |\n"
     '|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|'
 )
 
@@ -83,7 +86,7 @@ def _xychart(
     top = max([*m, *a, 1]) * 1.15
     return [
         '```mermaid',
-        '%%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#d93025, #1a73e8"}}}}%%',  # red = MCP, blue = A2A
+        '%%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#d93025, #1a73e8"}}}}%%',  # red = MCP over API, blue = A2A over APIs
         'xychart-beta',
         f'    title "{title}"',
         '    x-axis [' + ', '.join(f'"{x}"' for x in xs) + ']',
@@ -92,7 +95,7 @@ def _xychart(
         '    line [' + ', '.join(f'{v:.2f}' for v in a) + ']',
         '```',
         '',
-        'Red line: MCP path · Blue line: A2A path.',
+        f'Red line: {M} · Blue line: {A}.',
         '',
     ]
 

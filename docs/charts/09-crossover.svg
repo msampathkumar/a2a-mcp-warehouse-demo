@@ -16,12 +16,12 @@
 <text x="283.0" y="274" text-anchor="middle" fill="#5f6368">3</text>
 <text x="371.4" y="274" text-anchor="middle" fill="#5f6368">4</text>
 <text x="459.8" y="274" text-anchor="middle" fill="#5f6368">5</text>
-<text x="14" y="149.0" transform="rotate(-90 14 149.0)" text-anchor="middle" fill="#5f6368">A2A tokens ÷ MCP tokens</text>
+<text x="14" y="149.0" transform="rotate(-90 14 149.0)" text-anchor="middle" fill="#5f6368">tokens: A2A over APIs ÷ MCP over API</text>
 <text x="283.0" y="290" text-anchor="middle" fill="#5f6368">Data sources needed per question</text>
 <rect x="62" y="40.0" width="442" height="81.8" fill="#fce8e6" opacity=".6"/>
 <rect x="62" y="121.8" width="442" height="136.2" fill="#e8f0fe" opacity=".6"/>
-<text x="498" y="56.0" text-anchor="end" font-weight="bold" fill="#d93025">MCP costs less</text>
-<text x="106.2" y="196.7" text-anchor="middle" font-weight="bold" fill="#1a73e8">A2A costs less</text>
+<text x="498" y="56.0" text-anchor="end" font-weight="bold" fill="#d93025">MCP over API costs less</text>
+<text x="68" y="196.7" font-weight="bold" fill="#1a73e8">A2A over APIs costs less</text>
 <line x1="62" x2="504" y1="121.8" y2="121.8" stroke="#202124" stroke-dasharray="5,4"/>
 <text x="498" y="116.8" text-anchor="end" fill="#202124">same cost</text>
 <rect x="86.8" y="67.8" width="38.9" height="54.0" fill="#d93025"/>

@@ -45,7 +45,7 @@
 <text x="474.9" y="252.8" text-anchor="middle" font-size="9" fill="#202124">1</text>
 <text x="459.8" y="85.2" text-anchor="middle" font-weight="bold" font-size="10" fill="#1a73e8">A2A wins</text>
 <rect x="66" y="304" width="10" height="10" fill="#d93025"/>
-<text x="80" y="313" fill="#202124">MCP (5 connections)</text>
-<rect x="229" y="304" width="10" height="10" fill="#1a73e8"/>
-<text x="243" y="313" fill="#202124">A2A (1 agent)</text>
+<text x="80" y="313" fill="#202124">MCP over API (5 connections)</text>
+<rect x="264" y="304" width="10" height="10" fill="#1a73e8"/>
+<text x="278" y="313" fill="#202124">A2A over APIs (1 agent)</text>
 </svg>

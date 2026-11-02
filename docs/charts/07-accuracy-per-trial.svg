@@ -38,7 +38,7 @@
 <rect x="459.8" y="40.0" width="28.9" height="218.0" fill="#1a73e8"/>
 <text x="474.3" y="37.0" text-anchor="middle" font-size="9" fill="#202124">100</text>
 <rect x="66" y="304" width="10" height="10" fill="#d93025"/>
-<text x="80" y="313" fill="#202124">MCP</text>
-<rect x="117" y="304" width="10" height="10" fill="#1a73e8"/>
-<text x="131" y="313" fill="#202124">A2A</text>
+<text x="80" y="313" fill="#202124">MCP over API</text>
+<rect x="168" y="304" width="10" height="10" fill="#1a73e8"/>
+<text x="182" y="313" fill="#202124">A2A over APIs</text>
 </svg>

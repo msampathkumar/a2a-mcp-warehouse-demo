@@ -36,7 +36,7 @@
 <circle cx="371.4" cy="256.9" r="3.5" fill="#1a73e8"/>
 <circle cx="459.8" cy="256.9" r="3.5" fill="#1a73e8"/>
 <rect x="66" y="304" width="10" height="10" fill="#d93025"/>
-<text x="80" y="313" fill="#202124">MCP</text>
-<rect x="117" y="304" width="10" height="10" fill="#1a73e8"/>
-<text x="131" y="313" fill="#202124">A2A</text>
+<text x="80" y="313" fill="#202124">MCP over API</text>
+<rect x="168" y="304" width="10" height="10" fill="#1a73e8"/>
+<text x="182" y="313" fill="#202124">A2A over APIs</text>
 </svg>

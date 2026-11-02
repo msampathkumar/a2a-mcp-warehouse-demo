@@ -1,4 +1,4 @@
-# Experiment report: MCP and A2A over a distributed data warehouse
+# Experiment report: MCP over API vs A2A over APIs on a distributed data warehouse
 
 **Date:** 2026-10-13 · **Main sweep (v2):** 5 levels × 10 questions × 2 paths × 5 trials = 500 attempts · **Model:** `gemini-3.5-flash-lite`, temperature 0, on every agent
 
@@ -8,8 +8,8 @@ Every number is re-derived from raw event files under [`results/`](results/). Ta
 
 Five tables live in five "places". Each place answers only single-table queries. Who should combine the data?
 
-- **MCP path:** the user's agent connects to one MCP server per table and joins the data itself.
-- **A2A path:** the user's agent sends the question to one remote agent (Google ADK) that reaches every table, joins, and returns the answer.
+- **MCP over API:** the user's agent connects to one MCP server per table and joins the data itself.
+- **A2A over APIs:** the user's agent sends the question to one remote agent (Google ADK) that reaches every table, joins, and returns the answer.
 
 ```mermaid
 flowchart LR
@@ -20,7 +20,7 @@ flowchart LR
 
 ## Setup
 
-| | MCP path | A2A path |
+| | MCP over API | A2A over APIs |
 | :--- | :--- | :--- |
 | Who joins | User's agent | Remote agent |
 | Join helpers | `save_result`, `local_sql` | Same, plus `semi_join_fetch` |
@@ -35,7 +35,7 @@ Shared rules: read-only, one table per query (validated with `sqlglot`, enforced
 
 ## Results (v2, 500 attempts)
 
-| Metric | MCP path | A2A path | Change |
+| Metric | MCP over API | A2A over APIs | Change |
 | :--- | ---: | ---: | ---: |
 | Correct | 234/250 (93.6%) | 246/250 (98.4%) | +4.8 pts |
 | Calls from the user's agent | 8,077 | 250 | −97% |
@@ -49,7 +49,9 @@ Shared rules: read-only, one table per query (validated with `sqlglot`, enforced
 
 ### By number of sources a question needs
 
-| Sources | Questions | Correct MCP / A2A | Calls from user's agent MCP / A2A | DataManager calls MCP / A2A | Seconds MCP / A2A | User's-agent tokens MCP / A2A |
+Each pair of values is **MCP over API / A2A over APIs**.
+
+| Sources | Questions | Correct | Calls from user's agent | DataManager calls | Seconds | User's-agent tokens |
 | :---: | ---: | :---: | :---: | :---: | :---: | :---: |
 | 1 | 22 | 100% / 99% | 2.6 / 1.0 | 2.6 / 2.0 | 10.1 / 5.9 | 4,820 / 463 |
 | 2 | 18 | 92% / 98% | 43.6 / 1.0 | 43.6 / 7.3 | 17.5 / 8.8 | 20,573 / 487 |
@@ -62,18 +64,18 @@ Means per attempt over 5 trials. "Calls from the user's agent" = MCP tool calls 
 ```mermaid
 %%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#d93025, #1a73e8"}}}}%%
 xychart-beta
-    title "Calls from the user's agent per question (MCP rises, A2A stays at 1)"
+    title "Calls from the user's agent per question (MCP over API rises, A2A over APIs stays at 1)"
     x-axis "Sources needed" ["1", "2", "3", "4", "5"]
     y-axis "calls" 0 --> 95
     line [2.6, 43.6, 77.6, 79.0, 72.4]
     line [1.0, 1.0, 1.0, 1.0, 1.0]
 ```
 
-Red line: MCP path · Blue line: A2A path.
+Red line: MCP over API · Blue line: A2A over APIs.
 
-### The playbook's effect (A2A path, v1 → v2)
+### The playbook's effect (A2A over APIs, v1 → v2)
 
-| A2A metric, all 50 questions | v1: no playbook (1 trial) | v2: playbook (5 trials) |
+| A2A over APIs metric, all 50 questions | v1: no playbook (1 trial) | v2: playbook (5 trials) |
 | :--- | ---: | ---: |
 | DataManager calls per question | 25.0 | 4.3 |
 | Total tokens per question | 29,053 | 12,872 |
@@ -83,8 +85,8 @@ With the playbook, the remote agent hit the sources about 6× less often and use
 
 ## Findings
 
-1. **Single-source questions: both work; MCP is the simplest fit.** Accuracy 100% (MCP) vs 99% (A2A). With one source there is nothing to combine.
-2. **Multi-source questions: A2A fits better.** On MCP the user's agent made 44–79 calls per question; on A2A, 1. Its tokens were 20k–240k vs about 500.
+1. **Single-source questions: both work; MCP over API is the simplest fit.** Accuracy 100% (MCP) vs 99% (A2A). With one source there is nothing to combine.
+2. **Multi-source questions: A2A over APIs fits better.** On MCP the user's agent made 44–79 calls per question; on A2A, 1. Its tokens were 20k–240k vs about 500.
 3. **Instructions are what make delegation pay off.** Without a playbook (v1), A2A moved the cost to the remote agent but did not reduce it. With one (v2), source calls fell 87% and total tokens 47% versus MCP. Only the agent side can carry a playbook like this.
 4. **MCP misses clustered in the hardest levels.** 16 MCP misses: 10 hit the 25-LLM-call cap, 5 were wrong answers, and 1 was a model-API rate-limit error (429), all but one at levels 4–5. A2A had 4 misses (one an empty reply), and its remote agent never hit its cap.
 
