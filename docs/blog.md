@@ -1,11 +1,11 @@
-# When to use MCP, and when to use A2A: lessons from 500 measured runs
+# When to use MCP over API, and when to use A2A over APIs: lessons from 500 measured runs
 
 **Draft — not published.** Full method and numbers: [`report.md`](report.md) · charts: [`charts/`](charts/) · statistics: [`results/stats.md`](results/stats.md)
 
 ## The short answer
 
-- **Use MCP** when the data is straightforward and the requests are linear: one source, one lookup, one query. It is the simplest thing that works.
-- **Use an A2A agent** when an answer needs data from several sources. As sources multiply, someone has to fetch, combine and reason over the data. In our test, an agent next to the data did it with fewer calls, fewer tokens on your side, and better accuracy than your own agent stitching together many MCP calls.
+- **Use MCP over API** when the data is straightforward and the requests are linear: one source, one lookup, one query. It is the simplest thing that works.
+- **Use an A2A agent (A2A over APIs)** when an answer needs data from several sources. As sources multiply, someone has to fetch, combine and reason over the data. In our test, an agent next to the data did it with fewer calls, fewer tokens on your side, and better accuracy than your own agent stitching together many MCP calls.
 
 We didn't want to just assert this, so we measured it.
 
@@ -13,15 +13,15 @@ We didn't want to just assert this, so we measured it.
 
 A sandwich-shop data warehouse with **five tables, each in a different "place"**. Two ways to ask it questions:
 
-- **5 MCP connections**, one per table. Your agent queries each one and combines the results itself.
-- **1 A2A agent** (built with Google's Agent Development Kit, ADK) that connects to the same five tables behind the scenes. Your agent sends one question and gets one answer.
+- **MCP over API: 5 MCP connections**, one per table. Your agent queries each one and combines the results itself.
+- **A2A over APIs: 1 A2A agent** (built with Google's Agent Development Kit, ADK) that connects to the same five tables behind the scenes. Your agent sends one question and gets one answer.
 
 ```mermaid
 flowchart LR
-  subgraph MCP["MCP path"]
+  subgraph MCP["MCP over API"]
     U1[Your agent] --> M1[(orders)] & M2[(stores)] & M3[(customers)] & M4[(order_items)] & M5[(products)]
   end
-  subgraph A2A["A2A path"]
+  subgraph A2A["A2A over APIs"]
     U2[Your agent] -->|1 question| R[A2A agent + playbook]
     R --> N1[(orders)] & N2[(stores)] & N3[(customers)] & N4[(order_items)] & N5[(products)]
   end
@@ -39,7 +39,7 @@ We started with **one table** and added one table per level until all **five** w
 
 ## What we found
 
-| | MCP (5 connections) | A2A (1 agent) |
+| | MCP over API (5 connections) | A2A over APIs (1 agent) |
 | :--- | ---: | ---: |
 | Correct answers | 93.6% | 98.4% |
 | Calls your agent made | 8,077 | 250 |
@@ -47,7 +47,7 @@ We started with **one table** and added one table per level until all **five** w
 | Tokens in your agent | 6.05M | 0.12M |
 | Tokens in total (both agents) | 6.05M | 3.22M |
 
-**With one source, MCP is the simplest fit.** Both paths were accurate (100% vs 99%). There is nothing to combine, so a second agent adds little.
+**With one source, MCP over API is the simplest fit.** Both paths were accurate (100% vs 99%). There is nothing to combine, so a second agent adds little.
 
 **With several sources, the work has to happen somewhere.** Once questions needed two or more tables, your agent averaged 44–79 MCP calls and 21k–240k tokens per question (240k is the single five-source question). Through A2A it sent one message and carried about 500 tokens.
 
@@ -83,7 +83,7 @@ In an earlier run without the playbook (1 trial), A2A only moved the cost from y
 
 ## Both have trade-offs
 
-| | MCP | A2A agent |
+| | MCP over API | A2A over APIs (one agent) |
 | :--- | :--- | :--- |
 | Best for | Simple, linear requests on one source | Questions that combine several sources |
 | Your agent's work | Fetches and combines everything | Sends one question |

@@ -22,6 +22,9 @@ ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT.parent / 'docs'
 CHARTS = DOCS / 'charts'
 MCP_C, A2A_C = '#d93025', '#1a73e8'
+# Names of the two compared paths, used in legends, titles and tables.
+MCP_L, A2A_L = 'MCP over API', 'A2A over APIs'
+LABEL = {'mcp': MCP_L, 'a2a': A2A_L}
 W, H, L, R, T, B = 520, 320, 62, 16, 40, 62
 
 
@@ -100,7 +103,8 @@ def _legend(out, items):
         out.append(
             f'<text x="{xx + 14}" y="{H - 7}" fill="#202124">{label}</text>'
         )
-        xx += 14 + 7 * len(label) + 16
+        # ~6 px per character at font-size 11 (was 7: too wide for the longer path labels)
+        xx += 14 + 6 * len(label) + 16
 
 
 def line_chart(
@@ -218,14 +222,14 @@ def main(tag: str) -> None:
         '01-user-calls',
         "Calls from the user's agent per question",
         xl,
-        [('MCP', MCP_C, *calls_m), ('A2A', A2A_C, *calls_a)],
+        [(MCP_L, MCP_C, *calls_m), (A2A_L, A2A_C, *calls_a)],
         'calls (mean, 95% CI)',
     )
     line_chart(
         '02-user-tokens',
         "Tokens in the user's agent per question (log)",
         xl,
-        [('MCP', MCP_C, *tok_m), ('A2A', A2A_C, *tok_a)],
+        [(MCP_L, MCP_C, *tok_m), (A2A_L, A2A_C, *tok_a)],
         'tokens (log scale)',
         log=True,
     )
@@ -233,7 +237,7 @@ def main(tag: str) -> None:
         '03-source-calls',
         'Calls to the data sources per question',
         xl,
-        [('MCP', MCP_C, *dm_m), ('A2A', A2A_C, *dm_a)],
+        [(MCP_L, MCP_C, *dm_m), (A2A_L, A2A_C, *dm_a)],
         'DataManager calls',
     )
     bar_chart(
@@ -241,10 +245,10 @@ def main(tag: str) -> None:
         'End-to-end seconds per question: median and p90',
         xl,
         [
-            ('MCP p50', '#f28b82', [_pct(v, 0.5) for v in sec_m]),
-            ('MCP p90', MCP_C, [_pct(v, 0.9) for v in sec_m]),
-            ('A2A p50', '#8ab4f8', [_pct(v, 0.5) for v in sec_a]),
-            ('A2A p90', A2A_C, [_pct(v, 0.9) for v in sec_a]),
+            (f'{MCP_L} p50', '#f28b82', [_pct(v, 0.5) for v in sec_m]),
+            ('p90', MCP_C, [_pct(v, 0.9) for v in sec_m]),
+            (f'{A2A_L} p50', '#8ab4f8', [_pct(v, 0.5) for v in sec_a]),
+            ('p90', A2A_C, [_pct(v, 0.9) for v in sec_a]),
         ],
         'seconds',
         xtitle='Sources needed per question',
@@ -253,7 +257,7 @@ def main(tag: str) -> None:
         '05-accuracy',
         'Correct answers by sources needed (%)',
         xl,
-        [('MCP', MCP_C, acc_m), ('A2A', A2A_C, acc_a)],
+        [(MCP_L, MCP_C, acc_m), (A2A_L, A2A_C, acc_a)],
         '% correct',
         xtitle='Sources needed per question',
     )
@@ -262,11 +266,11 @@ def main(tag: str) -> None:
         'Total tokens per question (who pays)',
         xl,
         [
-            ("MCP: user's agent", MCP_C, tok_m[0]),
-            ("A2A: user's agent", A2A_C, tot_a_client),
+            (MCP_L, MCP_C, tok_m[0]),
+            (f"{A2A_L}: user's agent", A2A_C, tot_a_client),
         ],
         'tokens',
-        stacked_on={1: ('A2A: remote agent', '#a8c7fa', tot_a_remote)},
+        stacked_on={1: ('+ remote agent', '#a8c7fa', tot_a_remote)},
         xtitle='Sources needed per question',
     )
 
@@ -274,7 +278,7 @@ def main(tag: str) -> None:
     tot_a = [c + r for c, r in zip(tot_a_client, tot_a_remote)]
     print('crossover ratios', [round(v, 2) for v in crossover_chart(srcs, tot_m, tot_a)])
 
-    # --- 10-second "versus" charts: MCP and A2A bars side by side ---
+    # --- 10-second "versus" charts: MCP over API and A2A over APIs bars side by side ---
     lv = sorted({r["level"] for r in rows})
     gl = defaultdict(list)
     for r in rows:
@@ -286,20 +290,20 @@ def main(tag: str) -> None:
     tot = lambda r: r["client_tokens"] + r["remote_tokens"]
     llm = lambda r: r["client_llm_calls"] + r["remote_llm_calls"]
     sx = "Data sources needed per question"
-    versus_chart("10-vs-tokens-by-sources", "Fewer sources: MCP is cheaper. More sources: A2A is.",
+    versus_chart("10-vs-tokens-by-sources", f"1 source: {MCP_L} is cheaper. 2+: {A2A_L} is.",
                  "Total tokens per question, both agents (lower is better)", xl,
                  tot_m, tot_a, "tokens", xtitle=sx)
-    versus_chart("11-vs-tokens-by-level", "Levels 1-3: MCP is cheaper. Levels 4-5: A2A is.",
+    versus_chart("11-vs-tokens-by-level", f"Levels 1-3: {MCP_L} is cheaper. 4-5: {A2A_L} is.",
                  "Total tokens per question, both agents (lower is better)", [f"L{l} ({l} tbl)" for l in lv],
                  lvl("mcp", tot), lvl("a2a", tot), "tokens", xtitle="Level (tables available)")
-    versus_chart("12-vs-llm-calls-by-sources", "Model calls grow faster on MCP as sources grow",
+    versus_chart("12-vs-llm-calls-by-sources", f"Model calls grow faster on {MCP_L} as sources grow",
                  "LLM calls per question, both agents (lower is better)", xl,
                  [st.mean(llm(r) for r in g[(s_, "mcp")]) for s_ in srcs],
                  [st.mean(llm(r) for r in g[(s_, "a2a")]) for s_ in srcs], "LLM calls", xtitle=sx)
     versus_chart("13-vs-user-calls-by-sources", "Your agent: up to ~80 MCP calls vs 1 A2A message",
                  "Calls your agent makes per question (lower is better)", xl,
                  calls_m[0], calls_a[0], "calls", xtitle=sx)
-    versus_chart("14-vs-accuracy-by-sources", "Accuracy: A2A holds up better at 2-4 sources",
+    versus_chart("14-vs-accuracy-by-sources", f"Accuracy: {A2A_L} holds up better at 2-4 sources",
                  "Correct answers (higher is better)", xl, acc_m, acc_a, "% correct",
                  lower_is_better=False, xtitle=sx, unit="%")
 
@@ -315,7 +319,7 @@ def main(tag: str) -> None:
         '07-accuracy-per-trial',
         'Accuracy per trial, all 50 questions (%)',
         [f'trial {t}' for t in trials],
-        [('MCP', MCP_C, acc_tr['mcp']), ('A2A', A2A_C, acc_tr['a2a'])],
+        [(MCP_L, MCP_C, acc_tr['mcp']), (A2A_L, A2A_C, acc_tr['a2a'])],
         '% correct',
     )
 
@@ -393,7 +397,7 @@ def main(tag: str) -> None:
             llm = [r['client_llm_calls'] + r['remote_llm_calls'] for r in R]
             sec = [r['elapsed_ms'] / 1000 for r in R]
             lines.append(
-                f'| {s} | {p.upper()} | {len(R)} | {100 * st.mean(r["correct"] for r in R):.0f}% | {st.mean(calls):.1f} ± {_ci(calls):.1f} '
+                f'| {s} | {LABEL[p]} | {len(R)} | {100 * st.mean(r["correct"] for r in R):.0f}% | {st.mean(calls):.1f} ± {_ci(calls):.1f} '
                 f'| {st.mean(dm):.1f} ± {_ci(dm):.1f} | {st.mean(tok):,.0f} ± {_ci(tok):,.0f} | {st.mean(tot):,.0f} | {st.mean(llm):.1f} '
                 f'| {_pct(sec, 0.5):.1f} | {_pct(sec, 0.9):.1f} |'
             )
@@ -406,7 +410,7 @@ def main(tag: str) -> None:
     ]
     for p in ('mcp', 'a2a'):
         lines.append(
-            f'| {p.upper()} | '
+            f'| {LABEL[p]} | '
             + ' | '.join(f'{v:.0f}%' for v in acc_tr[p])
             + ' |'
         )
@@ -415,16 +419,16 @@ def main(tag: str) -> None:
 
 
 def crossover_chart(srcs, mcp_tokens, a2a_tokens):
-    """One simple picture: total tokens per question, A2A relative to MCP (MCP = 1.0).
-    Above the line MCP costs less; below it A2A costs less."""
+    """One simple picture: total tokens per question, A2A over APIs relative to MCP over API (= 1.0).
+    Above the line MCP over API costs less; below it A2A over APIs costs less."""
     ratios = [a / m for a, m in zip(a2a_tokens, mcp_tokens)]
     ymax = 1.6
-    out, x, y = _frame("Which path costs less as data sources grow?", ymax, "A2A tokens ÷ MCP tokens", [str(s) for s in srcs])
+    out, x, y = _frame("Which path costs less as data sources grow?", ymax, f"tokens: {A2A_L} ÷ {MCP_L}", [str(s) for s in srcs])
     out.append(f'<text x="{(L + W - R) / 2}" y="{H - B + 32}" text-anchor="middle" fill="#5f6368">Data sources needed per question</text>')
     out.append(f'<rect x="{L}" y="{y(ymax):.1f}" width="{W - L - R}" height="{y(1) - y(ymax):.1f}" fill="#fce8e6" opacity=".6"/>')
     out.append(f'<rect x="{L}" y="{y(1):.1f}" width="{W - L - R}" height="{y(0) - y(1):.1f}" fill="#e8f0fe" opacity=".6"/>')
-    out.append(f'<text x="{W - R - 6}" y="{y(ymax) + 16:.1f}" text-anchor="end" font-weight="bold" fill="{MCP_C}">MCP costs less</text>')
-    out.append(f'<text x="{x(0):.1f}" y="{y(0.45):.1f}" text-anchor="middle" font-weight="bold" fill="{A2A_C}">A2A costs less</text>')
+    out.append(f'<text x="{W - R - 6}" y="{y(ymax) + 16:.1f}" text-anchor="end" font-weight="bold" fill="{MCP_C}">{MCP_L} costs less</text>')
+    out.append(f'<text x="{L + 6}" y="{y(0.45):.1f}" font-weight="bold" fill="{A2A_C}">{A2A_L} costs less</text>')
     out.append(f'<line x1="{L}" x2="{W - R}" y1="{y(1):.1f}" y2="{y(1):.1f}" stroke="#202124" stroke-dasharray="5,4"/>')
     out.append(f'<text x="{W - R - 6}" y="{y(1) - 5:.1f}" text-anchor="end" fill="#202124">same cost</text>')
     slot = (W - L - R) / len(srcs)
@@ -441,7 +445,7 @@ def crossover_chart(srcs, mcp_tokens, a2a_tokens):
 
 
 def versus_chart(name, title, subtitle, xlabels, mcp, a2a, ylabel, lower_is_better=True, xtitle="", unit=""):
-    """Grouped MCP vs A2A bars per x value, with a winner tag over each pair.
+    """Grouped MCP over API vs A2A over APIs bars per x value, with a winner tag over each pair.
     Built to be read in 10-30 seconds: the title states the takeaway."""
     ymax = 120 if unit == "%" else _nice(max(mcp + a2a) * 1.18)
     out, x, y = _frame(title, ymax, ylabel, xlabels)
@@ -461,7 +465,7 @@ def versus_chart(name, title, subtitle, xlabels, mcp, a2a, ylabel, lower_is_bett
             mcp_wins = (m < a) if lower_is_better else (m > a)
             tag, col = ("MCP wins", MCP_C) if mcp_wins else ("A2A wins", A2A_C)
         out.append(f'<text x="{x(i):.1f}" y="{y(max(m, a)) - 15:.1f}" text-anchor="middle" font-weight="bold" font-size="10" fill="{col}">{tag}</text>')
-    _legend(out, [("MCP (5 connections)", MCP_C), ("A2A (1 agent)", A2A_C)])
+    _legend(out, [(f"{MCP_L} (5 connections)", MCP_C), (f"{A2A_L} (1 agent)", A2A_C)])
     _write(name, out)
 
 

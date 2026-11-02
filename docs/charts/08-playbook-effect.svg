@@ -24,6 +24,6 @@
 <text x="431.2" y="184.8" text-anchor="middle" font-size="9" fill="#202124">12.9</text>
 <rect x="66" y="304" width="10" height="10" fill="#9aa0a6"/>
 <text x="80" y="313" fill="#202124">no playbook (v1)</text>
-<rect x="208" y="304" width="10" height="10" fill="#1a73e8"/>
-<text x="222" y="313" fill="#202124">playbook (v2)</text>
+<rect x="192" y="304" width="10" height="10" fill="#1a73e8"/>
+<text x="206" y="313" fill="#202124">playbook (v2)</text>
 </svg>
